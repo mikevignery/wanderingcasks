@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Wandering Casks — Owner Dashboard</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #F7F2EA; --ink: #1A1A1A; --terracotta: #C1531F;
+  --card: #FDFBF7; --card-line: #e3dccc; --sub: #5a5340; --faint: #7a725f;
+  --link: #a5672f; --link-hover: #7d4e22; --rust: #a5432b;
+  --avail-bg: #f0e6da; --avail-tx: #8a5a17;
+  --tier-bg: #f3e2de; --tier-tx: #a5432b;
+  --danger: #a33a25; --danger-bg: #f6e3de; --ok: #4f6b3a; --ok-bg: #e8ecdd;
+  --radius: 12px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--cream); color: var(--ink); font-family: 'DM Sans', sans-serif; font-size: 15px; line-height: 1.55; }
+h1, h2 { font-family: 'Fraunces', serif; }
+/* Bottle & recipe names render in DM Sans (brand legal rule), so h3 stays DM Sans */
+h3 { font-family: 'DM Sans', sans-serif; }
+.hidden { display: none !important; }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+button { font-family: inherit; cursor: pointer; }
+a { color: var(--link); text-decoration: none; }
+a:hover { color: var(--link-hover); }
+input, select, textarea {
+  width: 100%; background: #fff; border: 1px solid var(--card-line); border-radius: 8px;
+  color: var(--ink); padding: 10px 12px; font-family: inherit; font-size: 14.5px;
+}
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--terracotta); }
+label { display: block; font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); margin: 0 0 5px; font-weight: 700; }
+.field { margin-bottom: 14px; }
+.btn {
+  display: inline-block; background: var(--ink); color: var(--cream); border: 1px solid var(--ink);
+  border-radius: 8px; padding: 11px 18px; font-weight: 700; font-size: 14px; text-decoration: none;
+}
+.btn:hover { background: #000; color: var(--cream); }
+.btn.ghost { background: transparent; border: 1px solid var(--card-line); color: var(--ink); }
+.btn.ghost:hover { border-color: var(--terracotta); color: var(--ink); }
+.btn.danger { background: transparent; border: 1px solid rgba(163,58,37,0.45); color: var(--danger); }
+.btn.danger:hover { border-color: var(--danger); }
+.btn.sm { padding: 8px 13px; font-size: 13px; }
+.muted { color: var(--sub); }
+.form-msg { display: none; margin-top: 10px; font-size: 13.5px; font-weight: 700; }
+.form-msg.ok { display: block; color: var(--ok); }
+.form-msg.err { display: block; color: var(--danger); }
+
+/* header — near-black bar per brand framework */
+header { display: flex; align-items: center; gap: 14px; padding: 16px 24px; background: var(--ink); color: var(--cream); flex-wrap: wrap; }
+.wordmark { font-family: 'Fraunces', serif; font-weight: 700; font-size: 20px; color: var(--cream); display: inline-flex; align-items: center; gap: 9px; }
+.dash-tag { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #e9b28e; border: 1px solid rgba(193,83,31,0.55); border-radius: 20px; padding: 3px 10px; font-weight: 700; }
+header .right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+header .who { color: #cfc8ba; font-size: 13px; }
+header .btn.ghost { border-color: rgba(247,242,234,0.35); color: var(--cream); }
+header .btn.ghost:hover { border-color: var(--terracotta); color: var(--cream); }
+
+/* login */
+.login-shell { min-height: 100vh; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.login-card { width: 420px; max-width: 100%; background: var(--card); border: 1px solid var(--card-line); border-radius: 14px; padding: 30px 28px; }
+.login-card h1 { font-size: 24px; margin-bottom: 4px; display: flex; align-items: center; gap: 9px; }
+.login-card .lede { color: var(--sub); font-size: 14px; margin-bottom: 22px; }
+.login-card .tagline { font: 400 11.5px 'DM Sans'; color: var(--rust); margin: 2px 0 14px; }
+
+/* left-hand tab sidebar */
+.dash-body { display: flex; gap: 26px; max-width: 1180px; margin: 0 auto; padding: 24px 20px; align-items: flex-start; }
+.tabs { display: flex; flex-direction: column; gap: 2px; width: 218px; flex: none; position: sticky; top: 18px; }
+.tabs button { background: none; border: none; color: var(--sub); font-weight: 700; font-size: 14.5px; text-align: left; padding: 11px 14px; border-radius: 10px; border-left: 3px solid transparent; white-space: nowrap; display: flex; align-items: center; justify-content: space-between; gap: 8px; cursor: pointer; }
+.tabs button:hover { color: var(--ink); background: #f0e8d8; }
+.tabs button.active { color: var(--ink); background: #f4ecdc; border-left-color: var(--terracotta); }
+.tabs .count { background: #ece4d4; border-radius: 20px; padding: 1px 8px; font-size: 12px; color: var(--sub); flex: none; }
+.tabs button.active .count { background: var(--terracotta); color: var(--cream); }
+.dash-main { flex: 1; min-width: 0; }
+/* hamburger + mobile drawer (hidden on desktop) */
+.tabs-toggle { display: none; }
+.tabs-backdrop { display: none; }
+.tabs-title { display: none; }
+
+/* cards */
+.rev-card { background: var(--card); border: 1px solid var(--card-line); border-radius: var(--radius); padding: 20px; margin-bottom: 18px; }
+.rev-card.pending { border-color: rgba(193,83,31,0.5); }
+.rev-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.rev-head h3 { font-size: 17px; font-weight: 700; }
+.rev-head .sub { color: var(--sub); font-size: 13px; }
+.pill { font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 4px; padding: 2px 8px; }
+.pill.pending { background: var(--tier-bg); color: var(--tier-tx); border: 1px solid rgba(165,67,43,0.35); }
+.pill.live { background: var(--avail-bg); color: var(--avail-tx); border: 1px solid rgba(138,90,23,0.3); }
+.pill.down { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(163,58,37,0.4); }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 16px; }
+.grid-4 { display: grid; grid-template-columns: 1.2fr 0.8fr 0.8fr 1.2fr; gap: 0 16px; }
+.acts { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+.hint { font-size: 12px; color: var(--faint); margin-top: 4px; }
+.empty { border: 1px dashed var(--card-line); border-radius: var(--radius); padding: 34px 20px; text-align: center; color: var(--sub); margin-bottom: 18px; background: rgba(253,251,247,0.6); }
+
+/* shelf rows */
+.shelf-row { display: flex; align-items: center; gap: 14px; background: var(--card); border: 1px solid var(--card-line); border-radius: 10px; padding: 13px 16px; margin-bottom: 10px; flex-wrap: wrap; }
+.shelf-row .info { flex: 1; min-width: 200px; }
+.shelf-row .info b { display: block; }
+.shelf-row .info small { color: var(--sub); }
+.controls { display: flex; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+.controls input[type=search] { flex: 1; min-width: 220px; }
+
+/* member avatars in the Reviews tab */
+.mod-ava { border-radius:50%; object-fit:cover; border:1px solid var(--card-line); display:inline-block; vertical-align:middle; flex:none; }
+.mod-ava-fallback { display:inline-flex; align-items:center; justify-content:center; background:#ece4d4; color:#a89b82; }
+
+/* faq */
+.faq-row { background: var(--card); border: 1px solid var(--card-line); border-radius: var(--radius); padding: 18px; margin-bottom: 14px; }
+.faq-row.inactive { opacity: 0.6; }
+.img-row { display: flex; gap: 10px; align-items: center; }
+.img-row input { flex: 1; }
+.img-row img.thumb { width: 46px; height: 46px; object-fit: cover; border-radius: 8px; border: 1px solid var(--card-line); flex: none; }
+.up-btn { white-space: nowrap; cursor: pointer; flex: none; }
+.link-chips { display: flex; flex-wrap: wrap; gap: 8px; min-height: 30px; align-items: center; }
+.link-chip { display: inline-flex; align-items: center; gap: 7px; background: var(--avail-bg); border: 1px solid var(--card-line); border-radius: 20px; padding: 5px 6px 5px 12px; font-size: 13px; color: var(--ink); }
+.link-chip button { background: none; border: none; color: var(--sub); font-size: 15px; line-height: 1; padding: 2px 6px; }
+.link-chip button:hover { color: var(--danger); }
+.check-line { display: flex; align-items: center; gap: 8px; font-size: 14px; margin-bottom: 12px; text-transform: none; letter-spacing: 0; color: var(--ink); font-weight: 500; }
+.check-line input { width: auto; accent-color: var(--terracotta); }
+
+footer { padding: 30px 24px 50px; color: var(--faint); font-size: 12.5px; text-align: center; }
+
+@media (max-width: 860px) {
+  .dash-body { flex-direction: column; gap: 0; padding: 14px 16px; }
+  /* hamburger button shows on mobile */
+  .tabs-toggle { display: inline-flex; align-items: center; gap: 9px; background: #fff; border: 1px solid var(--card-line);
+    border-radius: 10px; padding: 10px 14px; font-weight: 700; font-size: 14.5px; color: var(--ink); width: 100%; cursor: pointer; margin-bottom: 4px; }
+  .tabs-toggle .bars { display: inline-flex; flex-direction: column; gap: 3px; }
+  .tabs-toggle .bars span { width: 18px; height: 2px; background: var(--ink); border-radius: 2px; }
+  /* sidebar becomes an off-canvas drawer */
+  .tabs { position: fixed; top: 0; left: 0; height: 100%; width: 260px; max-width: 82vw; background: var(--card);
+    border-right: 1px solid var(--card-line); box-shadow: 6px 0 26px rgba(26,26,26,.22); z-index: 60;
+    padding: 18px 14px; gap: 3px; transform: translateX(-100%); transition: transform .22s ease; overflow-y: auto; }
+  .tabs.open { transform: translateX(0); }
+  .tabs button { padding: 13px 14px; }
+  .tabs-title { display: block; font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; margin: 2px 4px 12px; }
+  .tabs-backdrop.open { display: block; position: fixed; inset: 0; background: rgba(26,26,26,.4); z-index: 55; }
+}
+@media (max-width: 720px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  input, select, textarea { font-size: 16px; }
+  .acts .btn { flex: 1; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div id="login-view" class="login-shell">
+  <div class="login-card">
+    <h1><svg width="24" height="24" viewBox="0 0 64 64" aria-hidden="true"><path d="M32,6 C24,20 16,30 16,40 C16,50.5 23,58 32,58 C41,58 48,50.5 48,40 C48,30 40,20 32,6 Z" fill="#c1531f"></path></svg>Wandering Casks</h1>
+    <p class="tagline">One drop. Endless discovery.</p>
+    <p class="lede">Owner Dashboard — sign in with your regular site account.</p>
+    <div class="field"><label for="li-email">Email</label><input id="li-email" type="email" autocomplete="email"></div>
+    <div class="field"><label for="li-pass">Password</label><input id="li-pass" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter') signIn()"></div>
+    <button class="btn" style="width:100%;" onclick="signIn()">Sign In</button>
+    <div id="li-msg" class="form-msg"></div>
+  </div>
+</div>
+
+<!-- ============ NOT AN ADMIN ============ -->
+<div id="denied-view" class="login-shell hidden">
+  <div class="login-card" style="text-align:center;">
+    <h1 style="font-size:20px;">This area is owners-only</h1>
+    <p class="lede" style="margin-top:8px;">Your account isn't on the admin list. If it should be, add it via admin-upgrade.sql in Supabase.</p>
+    <button class="btn ghost" onclick="signOut()">Sign out</button>
+  </div>
+</div>
+
+<!-- ============ DASHBOARD ============ -->
+<div id="dash-view" class="hidden">
+  <header>
+    <span class="wordmark"><svg width="22" height="22" viewBox="0 0 64 64" aria-hidden="true"><path d="M32,6 C24,20 16,30 16,40 C16,50.5 23,58 32,58 C41,58 48,50.5 48,40 C48,30 40,20 32,6 Z" fill="#c1531f"></path></svg>Wandering Casks</span>
+    <span class="dash-tag">Owner Dashboard</span>
+    <div class="right">
+      <span class="who" id="who"></span>
+      <a class="btn ghost sm" href="index.html">← Back to site</a>
+      <button class="btn ghost sm" onclick="signOut()">Sign out</button>
+    </div>
+  </header>
+
+  <button class="tabs-toggle" id="tabs-toggle" onclick="toggleTabs()" aria-label="Open menu" aria-expanded="false">
+    <span class="bars"><span></span><span></span><span></span></span>
+    <span id="tabs-toggle-label">Menu</span>
+  </button>
+  <div class="dash-body">
+    <div class="tabs-backdrop" id="tabs-backdrop" onclick="toggleTabs(false)"></div>
+    <nav class="tabs" id="tabs" aria-label="Dashboard sections">
+      <span class="tabs-title">Dashboard</span>
+      <button id="tab-pending" class="active" onclick="setTab('pending')">Pending Bottles <span class="count" id="count-pending">0</span></button>
+      <button id="tab-pendingcocktails" onclick="setTab('pendingcocktails')">Pending Cocktails <span class="count" id="count-pendingcocktails">0</span></button>
+      <button id="tab-shelf" onclick="setTab('shelf')">The Shelf <span class="count" id="count-shelf">0</span></button>
+      <button id="tab-cocktails" onclick="setTab('cocktails')">Cocktails <span class="count" id="count-cocktails">0</span></button>
+      <button id="tab-addons" onclick="setTab('addons')">Add-Ons <span class="count" id="count-addons">0</span></button>
+      <button id="tab-reviews" onclick="setTab('reviews')">Reviews <span class="count" id="count-reviews">0</span></button>
+      <button id="tab-pricing" onclick="setTab('pricing')">Pricing <span class="count" id="count-pricing">0</span></button>
+      <button id="tab-faq" onclick="setTab('faq')">Aidan Q&amp;A <span class="count" id="count-faq">0</span></button>
+      <button id="tab-unanswered" onclick="setTab('unanswered')">Unanswered <span class="count" id="count-unanswered">0</span></button>
+      <button id="tab-feedback" onclick="setTab('feedback')">Aidan Feedback <span class="count" id="count-feedback">0</span></button>
+      <button id="tab-sitefeedback" onclick="setTab('sitefeedback')">Site Feedback <span class="count" id="count-sitefeedback">0</span></button>
+      <button id="tab-users" onclick="setTab('users')">Users <span class="count" id="count-users">0</span></button>
+    </nav>
+    <div class="dash-main"><div id="panel"></div></div>
+  </div>
+  <footer>
+  Changes save straight to Supabase and appear on the live site immediately. Publishing a bottle makes it visible to every member.<br>
+  © 2026 Wandering Casks. Wandering Casks is a wholly owned digital property of Pipperton Media, LLC, a Florida limited liability company.
+</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://pqbpmcshkwdngesnlzgi.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxYnBtY3Noa3dkbmdlc25semdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3MDE1MTQsImV4cCI6MjA5OTI3NzUxNH0.xlJpUcADnfpMsKqiNtfP84Fp2xm9YvyB4Lo9J_V3j7I";
+
+let db, currentUser = null, tab = 'pending';
+let allBottles = [], faqRows = [], namesById = {}, unanswered = [], feedback = [], faqDraft = null;
+let siteFeedback = [], siteFbFilter = 'all';
+let cocktailsRows = [], cocktailsOk = true, editingCocktail = null;
+let cocktailPairings = {};   // { [cocktailId]: [bottleName, ...] }
+/* The bottles currently attached to the 12 classic recipes, so the editor
+   comes pre-filled and nothing is lost. Keyed by the cocktail's URL slug. */
+const BUILTIN_PAIRINGS = {
+  "old-fashioned":          ["Buffalo Trace", "Rittenhouse Bottled-in-Bond Rye"],
+  "whiskey-sour":           ["Buffalo Trace", "Johnnie Walker Black Label"],
+  "kentucky-mule":          ["Maker's Mark", "Wild Turkey 101"],
+  "manhattan":              ["Rittenhouse Bottled-in-Bond Rye", "Sazerac Rye 6yr"],
+  "sazerac":                ["Sazerac Rye 6yr"],
+  "irish-whiskey-highball": ["Jameson"],
+  "whiskey-ginger":         ["Bushmills Original", "Tullamore D.E.W."],
+  "rob-roy":                ["Glenfiddich 12yr", "Highland Park 12yr"],
+  "penicillin":             ["Ardbeg 10yr", "Talisker 10yr"],
+  "blood-and-sand":         ["Johnnie Walker Black Label", "Monkey Shoulder"],
+  "rusty-nail":             ["Dewar's White Label", "Chivas Regal 12yr"],
+  "highball":               ["Suntory Toki", "Mars Iwai Tradition"]
+};
+let addonsRows = [], addonsOk = true, editingAddon = null;
+let reviewRows = [], memberProfilesById = {}, reviewSearch = '';
+/* Users tab. The list comes from an RPC because auth.users can't be read with
+   the anon key — see users-admin-setup.sql. usersOk stays false until that
+   function exists, which keeps the tab from looking broken before it's run. */
+let userRows = [], usersOk = false, usersErr = '', userSearch = '', userFilter = 'all';
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function msg(el, text, cls){ el.textContent = text; el.className = 'form-msg ' + cls; }
+/* The Category dropdown is backed by bottles.wc_category — the column the public
+   Discover pages actually read to decide which category a bottle files under.
+   wc_category stores a short category id (bourbon, scotch-single, …), NOT the
+   friendly label. CATEGORY_IDS maps each id to the label shown on screen, and
+   MUST stay in sync with CAT_LABEL in index.html / render.js. */
+const CATEGORY_IDS = {
+  bourbon: 'Bourbon',
+  rye: 'Rye',
+  'scotch-single': 'Scotch (Single Malt)',
+  'scotch-blend': 'Scotch (Blended)',
+  irish: 'Irish Whiskey',
+  japanese: 'Japanese Whisky'
+};
+/* Older bottles may still hold a friendly label in bottles.type (e.g. 'Bourbon',
+   'Tennessee', 'Scotch (Single Malt)'). This lets the dropdown recognise either
+   a wc_category id or one of those legacy labels and land on the right option —
+   mirroring bottleTypeToCategory in render.js so admin and site always agree. */
+const CATEGORY_ALIASES = {
+  bourbon:'bourbon', tennessee:'bourbon', 'tennessee whiskey':'bourbon', 'tennessee whisky':'bourbon',
+  rye:'rye', 'rye whiskey':'rye', 'rye whisky':'rye',
+  irish:'irish', 'irish whiskey':'irish', 'irish whisky':'irish',
+  japanese:'japanese', 'japanese whisky':'japanese', 'japanese whiskey':'japanese',
+  'scotch (single malt)':'scotch-single', 'scotch single malt':'scotch-single',
+  'single malt':'scotch-single', 'single malt scotch':'scotch-single',
+  'scotch-single':'scotch-single',
+  'scotch (blended)':'scotch-blend', 'scotch blended':'scotch-blend',
+  'blended scotch':'scotch-blend', blended:'scotch-blend', scotch:'scotch-blend',
+  'scotch-blend':'scotch-blend'
+};
+/* Turn any stored value (a wc_category id or a legacy type label) into the
+   canonical wc_category id, or '' when it's genuinely unrecognised. */
+function toCategoryId(raw){
+  const v = String(raw ?? '').toLowerCase().trim();
+  if (!v) return '';
+  if (CATEGORY_IDS[v]) return v;
+  return CATEGORY_ALIASES[v] || '';
+}
+const RARITY = { 1:'Shelf Staple', 2:'Easy to Find', 3:'Premium', 4:'Allocated', 5:'Trophy Bottle' };
+
+/* Build the Category <select>. Option values are wc_category ids; labels stay
+   friendly. If the stored value can't be recognised it's carried through as its
+   own selected option so a save never silently rewrites a bottle's category. */
+function categoryOptions(current){
+  const id = toCategoryId(current);
+  const raw = String(current ?? '').trim();
+  let html = '';
+  if (raw && !id){
+    html += `<option value="${esc(raw)}" selected>${esc(raw)} — unrecognised, please re-pick</option>`;
+  }
+  for (const cid in CATEGORY_IDS){
+    html += `<option value="${esc(cid)}" ${cid === id ? 'selected' : ''}>${esc(CATEGORY_IDS[cid])}</option>`;
+  }
+  return html;
+}
+
+/* ---------- boot / auth ---------- */
+document.addEventListener('DOMContentLoaded', async () => {
+  db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const { data: { session } } = await db.auth.getSession();
+  if (session) { currentUser = session.user; await enter(); }
+  db.auth.onAuthStateChange(async (evt, sess) => {
+    const wasIn = !!currentUser;
+    currentUser = sess ? sess.user : null;
+    if (!wasIn && currentUser) await enter();
+    if (wasIn && !currentUser) { show('login-view'); }
+  });
+});
+function show(id){ ['login-view','denied-view','dash-view'].forEach(v => $(v).classList.toggle('hidden', v !== id)); }
+async function signIn(){
+  const box = $('li-msg');
+  msg(box, 'Signing in…', 'ok');
+  const { error } = await db.auth.signInWithPassword({ email: $('li-email').value.trim(), password: $('li-pass').value });
+  if (error) msg(box, error.message, 'err');
+}
+async function signOut(){ await db.auth.signOut(); show('login-view'); }
+async function enter(){
+  const { data: isAdmin, error } = await db.rpc('is_admin');
+  if (error || !isAdmin) { show('denied-view'); return; }
+  $('who').textContent = currentUser.email;
+  show('dash-view');
+  await loadAll();
+}
+
+/* ---------- data ---------- */
+async function loadAll(){
+  const [{ data: b, error: be }, { data: f }, { data: p }, unRes, fbRes, cxRes, rvRes, mpRes, aoRes, sfRes] = await Promise.all([
+    db.from('bottles').select('*').order('id', { ascending: false }),
+    db.from('aidan_faq').select('*').order('id'),
+    db.from('profiles').select('id, full_name'),
+    db.from('aidan_unanswered').select('*').order('created_at', { ascending: false }),
+    db.from('aidan_feedback').select('*').order('created_at', { ascending: false }),
+    db.from('cocktails').select('*').order('sort').order('name'),
+    db.from('item_ratings').select('*').order('created_at', { ascending: false }),
+    db.from('member_profiles').select('user_id, username, display_name, avatar_url, is_private'),
+    db.from('add_ons').select('*').order('sort').order('name'),
+    db.from('site_feedback').select('*').order('created_at', { ascending: false })
+  ]);
+  if (be) alert('Could not load bottles: ' + be.message);
+  allBottles = b || [];
+  faqRows = f || [];
+  unanswered = (unRes && unRes.data) || [];
+  feedback = (fbRes && fbRes.data) || [];
+  cocktailsOk = !(cxRes && cxRes.error);
+  cocktailsRows = (cxRes && cxRes.data) || [];
+  initCocktailPairings();
+  addonsOk = !(aoRes && aoRes.error);
+  addonsRows = (aoRes && aoRes.data) || [];
+  siteFeedback = (sfRes && sfRes.data) || [];
+  reviewRows = (rvRes && rvRes.data) || [];
+  memberProfilesById = {};
+  ((mpRes && mpRes.data) || []).forEach(x => memberProfilesById[x.user_id] = x);
+  await loadPrices();
+  await loadUsers();
+  initFaqLinks();
+  namesById = {};
+  (p || []).forEach(x => namesById[x.id] = x.full_name || 'Member');
+  renderCounts(); render();
+}
+const pending = () => allBottles.filter(b => b.published === false && b.saved_for_later !== true);
+const savedLater = () => allBottles.filter(b => b.published === false && b.saved_for_later === true);
+const pendingCocktails = () => cocktailsRows.filter(c => c.published === false && c.submitted_by);
+const shelf   = () => allBottles.filter(b => b.published !== false);
+/* ---------- pricing (pilot) ----------
+   Two jobs: seed a handful of bottles before launch so the feature
+   doesn't ship empty, and review the outlier prices the 2x rule held
+   back. Seeded rows follow the exact same staleness rules as member
+   submissions — no special casing. */
+let priceRows = [], pricingOk = true, priceFilter = 'flagged';
+
+async function loadPrices(){
+  const { data, error } = await db.from('bottle_prices')
+    .select('*').order('submitted_at', { ascending: false });
+  pricingOk = !error;
+  priceRows = data || [];
+}
+
+/* Accounts come from admin_users_list(), a SECURITY DEFINER function that
+   checks is_admin() before it touches auth.users. Nothing here works with the
+   anon key alone, which is exactly the point — the key is public. */
+async function loadUsers(){
+  const { data, error } = await db.rpc('admin_users_list');
+  usersOk  = !error;
+  usersErr = error ? error.message : '';
+  userRows = data || [];
+}
+
+function priceBottleName(id){
+  const b = allBottles.find(x => x.id === id);
+  return b ? (b.name || 'Untitled') : 'Unknown bottle';
+}
+function priceMsrp(id){
+  const b = allBottles.find(x => x.id === id);
+  return b && b.msrp_low != null ? Number(b.msrp_low) : null;
+}
+function priceMoney(n){
+  const v = Number(n);
+  if (!isFinite(v)) return '';
+  return '$' + (Math.round(v * 100) % 100 === 0 ? String(Math.round(v)) : v.toFixed(2));
+}
+/* Age is measured from confirmed_at, falling back to submitted_at. */
+function priceAgeDays(r){
+  const t = new Date(r.confirmed_at || r.submitted_at).getTime();
+  if (!isFinite(t)) return 0;
+  return Math.floor((Date.now() - t) / 86400000);
+}
+function priceStatePill(r){
+  if (r.status === 'flagged') return '<span class="pill pending">Flagged</span>';
+  if (r.status === 'stale')   return '<span class="pill down">Stale</span>';
+  const d = priceAgeDays(r);
+  if (d >= 60) return '<span class="pill down">Expired (60d+)</span>';
+  if (d >= 30) return '<span class="pill pending">Aging (30d+)</span>';
+  return '<span class="pill live">Active</span>';
+}
+
+function renderPricing(){
+  if (!pricingOk) {
+    $('panel').innerHTML = `<div class="empty">The <code>bottle_prices</code> table isn't there yet.
+      Run <b>pricing-schema.sql</b> in Supabase's SQL Editor, then reload this page.</div>`;
+    return;
+  }
+
+  const flagged = priceRows.filter(r => r.status === 'flagged');
+  const userRows = priceRows.filter(r => r.source === 'user');
+  const seeded  = priceRows.filter(r => r.source === 'seeded');
+  const priced  = new Set(priceRows.filter(r => r.status === 'active').map(r => r.bottle_id));
+  const live    = allBottles.filter(b => b.published);
+
+  const rows = priceRows.filter(r =>
+    priceFilter === 'all' ||
+    (priceFilter === 'flagged' && r.status === 'flagged') ||
+    (priceFilter === 'user'    && r.source === 'user') ||
+    (priceFilter === 'seeded'  && r.source === 'seeded'));
+
+  const bottleOpts = live
+    .slice().sort((a, b) => String(a.name || '').localeCompare(String(b.name || '')))
+    .map(b => `<option value="${esc(b.id)}">${esc(b.name)}${b.msrp_low != null ? ` — ref ${priceMoney(b.msrp_low)}` : ' — no reference price'}</option>`)
+    .join('');
+
+  $('panel').innerHTML = `
+    <div class="controls" style="align-items:center;">
+      <p class="muted" style="font-size:13.5px; flex:1; min-width:240px;">
+        <b>${userRows.length}</b> member submission${userRows.length === 1 ? '' : 's'} ·
+        <b>${seeded.length}</b> seeded ·
+        <b>${priced.size}</b> of <b>${live.length}</b> published bottles have a live price${
+        flagged.length ? ` · <b style="color:var(--terracotta)">${flagged.length} flagged for review</b>` : ''}.
+      </p>
+      <select style="width:auto;" onchange="priceFilter=this.value; renderPricing();">
+        <option value="flagged" ${priceFilter==='flagged'?'selected':''}>Flagged only</option>
+        <option value="user"    ${priceFilter==='user'   ?'selected':''}>Member submissions</option>
+        <option value="seeded"  ${priceFilter==='seeded' ?'selected':''}>Seeded only</option>
+        <option value="all"     ${priceFilter==='all'    ?'selected':''}>All</option>
+      </select>
+    </div>
+
+    <div class="rev-card">
+      <div class="rev-head"><h3>Seed a price</h3>
+        <span class="sub">Bootstraps a bottle so it doesn't launch on the empty state. Saved as <code>source = seeded</code> with no member attached.</span>
+      </div>
+      <div class="field"><label>Bottle</label><select id="seed-bottle">${bottleOpts}</select></div>
+      <div class="field"><label>Price (USD)</label><input id="seed-price" type="text" inputmode="decimal" placeholder="31.99"></div>
+      <div class="field"><label>Metro area</label><input id="seed-metro" type="text" maxlength="120" placeholder="Bradenton, FL"></div>
+      <div class="acts"><button class="btn" onclick="seedPrice()">Add seeded price</button></div>
+      <p class="muted" style="font-size:12.5px;margin-top:10px;">Aim for 8–10 bottles. Leave the rest empty so members have a real reason to be first.</p>
+    </div>
+
+    ${rows.length ? '' : `<div class="empty">${priceRows.length ? 'Nothing in this filter.' : 'No prices yet.'}</div>`}
+
+    ${rows.map(r => {
+      const ref = priceMsrp(r.bottle_id);
+      const over = ref != null && ref > 0 ? (Number(r.price) / ref) : null;
+      const when = new Date(r.submitted_at).toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' });
+      return `
+      <div class="rev-card${r.status === 'flagged' ? ' pending' : ''}">
+        <div class="rev-head">
+          <h3>${esc(priceBottleName(r.bottle_id))} — ${esc(priceMoney(r.price))}</h3>
+          ${priceStatePill(r)}
+          <span class="pill">${r.source === 'seeded' ? 'Seeded' : 'Member'}</span>
+          <span class="sub">${esc(r.metro_area)} · added ${when} · ${priceAgeDays(r)}d old</span>
+        </div>
+        ${ref != null
+          ? `<p class="muted" style="font-size:13px;margin:0 0 10px;">Reference price ${esc(priceMoney(ref))}${
+              over ? ` · this is <b>${over.toFixed(1)}x</b> that${over > 2 ? ' — over the 2x threshold' : ''}` : ''}.</p>`
+          : `<p class="muted" style="font-size:13px;margin:0 0 10px;">No reference price on this bottle, so outlier flagging is skipped for it.</p>`}
+        <div class="acts">
+          ${r.status === 'flagged' ? `<button class="btn sm" onclick="approvePrice('${esc(r.id)}')">Approve — publish it</button>` : ''}
+          ${r.status === 'active'  ? `<button class="btn ghost sm" onclick="flagPrice('${esc(r.id)}')">Hide — flag for review</button>` : ''}
+          <button class="btn danger sm" onclick="deletePrice('${esc(r.id)}')">Delete</button>
+        </div>
+      </div>`;
+    }).join('')}`;
+}
+
+async function seedPrice(){
+  const bottle_id = $('seed-bottle').value;
+  const price = Number(String($('seed-price').value || '').replace(/[^0-9.]/g, ''));
+  const metro = String($('seed-metro').value || '').replace(/\s+/g, ' ').trim();
+  if (!bottle_id) return alert('Pick a bottle.');
+  if (!isFinite(price) || price <= 0) return alert('Enter a price above $0.');
+  if (metro.length < 2) return alert('Enter a metro area, e.g. "Bradenton, FL".');
+
+  const { error } = await db.from('bottle_prices').insert({
+    bottle_id: bottle_id, price: price.toFixed(2), metro_area: metro,
+    source: 'seeded', submitted_by: null
+  });
+  if (error) return alert('Could not seed that price: ' + error.message);
+  $('seed-price').value = ''; $('seed-metro').value = metro;   // keep the metro for the next one
+  await loadPrices(); renderCounts(); renderPricing();
+}
+
+async function approvePrice(id){
+  const { error } = await db.from('bottle_prices').update({ status: 'active' }).eq('id', id);
+  if (error) return alert('Could not approve: ' + error.message);
+  const row = priceRows.find(r => r.id === id); if (row) row.status = 'active';
+  renderCounts(); renderPricing();
+}
+async function flagPrice(id){
+  const { error } = await db.from('bottle_prices').update({ status: 'flagged' }).eq('id', id);
+  if (error) return alert('Could not hide that price: ' + error.message);
+  const row = priceRows.find(r => r.id === id); if (row) row.status = 'flagged';
+  renderCounts(); renderPricing();
+}
+async function deletePrice(id){
+  if (!confirm('Delete this price permanently? Hiding it keeps the row for pilot reporting — deleting does not.')) return;
+  const { error } = await db.from('bottle_prices').delete().eq('id', id);
+  if (error) return alert('Could not delete: ' + error.message);
+  priceRows = priceRows.filter(r => r.id !== id);
+  renderCounts(); renderPricing();
+}
+
+function renderCounts(){
+  $('count-pending').textContent = pending().length;
+  $('count-pendingcocktails').textContent = pendingCocktails().length;
+  $('count-shelf').textContent = shelf().length;
+  $('count-faq').textContent = faqRows.length;
+  $('count-unanswered').textContent = unanswered.length;
+  $('count-cocktails').textContent = cocktailsRows.length;
+  $('count-addons').textContent = addonsRows.length;
+  $('count-reviews').textContent = reviewRows.length;
+  const flaggedPrices = priceRows.filter(r => r.status === 'flagged').length;
+  $('count-pricing').textContent = flaggedPrices ? `${priceRows.length} · ${flaggedPrices} flagged` : priceRows.length;
+  const downs = feedback.filter(f => f.verdict === 'down').length;
+  $('count-feedback').textContent = downs ? `${feedback.length} · ${downs}👎` : feedback.length;
+  const fresh = siteFeedback.filter(f => f.status !== 'reviewed').length;
+  $('count-sitefeedback').textContent = fresh ? `${siteFeedback.length} · ${fresh} new` : siteFeedback.length;
+  const blocked = userRows.filter(isBlocked).length;
+  $('count-users').textContent = blocked ? `${userRows.length} · ${blocked} blocked` : userRows.length;
+}
+const TAB_LABELS = { pending:'Pending Bottles', pendingcocktails:'Pending Cocktails', shelf:'The Shelf', cocktails:'Cocktails', addons:'Add-Ons', reviews:'Reviews', pricing:'Pricing', faq:'Aidan Q&A', unanswered:'Unanswered', feedback:'Aidan Feedback', sitefeedback:'Site Feedback', users:'Users' };
+function setTab(t){
+  tab = t;
+  ['pending','pendingcocktails','shelf','cocktails','addons','reviews','pricing','faq','unanswered','feedback','sitefeedback','users'].forEach(x => $('tab-'+x).classList.toggle('active', x === t));
+  const lbl = $('tabs-toggle-label'); if (lbl) lbl.textContent = TAB_LABELS[t] || 'Menu';
+  toggleTabs(false);
+  render();
+}
+/* Mobile drawer open/close. Pass false to force-close. */
+function toggleTabs(force){
+  const nav = $('tabs'), bd = $('tabs-backdrop'), btn = $('tabs-toggle');
+  if (!nav) return;
+  const open = force === false ? false : !nav.classList.contains('open');
+  nav.classList.toggle('open', open);
+  if (bd) bd.classList.toggle('open', open);
+  if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+function render(){ if (tab === 'pending') renderPending(); else if (tab === 'pendingcocktails') renderPendingCocktails(); else if (tab === 'shelf') renderShelf(); else if (tab === 'cocktails') renderCocktails(); else if (tab === 'addons') renderAddons(); else if (tab === 'reviews') renderReviews(); else if (tab === 'pricing') renderPricing(); else if (tab === 'unanswered') renderUnanswered(); else if (tab === 'feedback') renderFeedback(); else if (tab === 'sitefeedback') renderSiteFeedback(); else if (tab === 'users') renderUsers(); else renderFaq(); }
+
+/* ---------- cocktails <-> friendly lines ---------- */
+function cocktailsToLines(c){
+  if (!Array.isArray(c)) return '';
+  return c.map(x => `${x.name || ''} :: ${x.recipe || ''}`).join('\n');
+}
+function linesToCocktails(text){
+  return text.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
+    const i = l.indexOf('::');
+    return i === -1 ? { name: l, recipe: '' } : { name: l.slice(0, i).trim(), recipe: l.slice(i + 2).trim() };
+  });
+}
+
+/* ---------- shared bottle editor ---------- */
+function bottleForm(b){
+  return `
+  <div class="grid-2">
+    <div class="field"><label>Bottle name</label><input id="f${b.id}-name" value="${esc(b.name)}"></div>
+    <div class="field"><label>Distillery / brand</label><input id="f${b.id}-company" value="${esc(b.company)}"></div>
+  </div>
+  <div class="grid-4">
+    <div class="field"><label>Category</label>
+      <select id="f${b.id}-type">${categoryOptions(b.wc_category || b.type)}</select></div>
+    <div class="field"><label>Price (USD)</label><input id="f${b.id}-price" type="number" step="0.01" value="${b.price ?? ''}"></div>
+    <div class="field"><label>Proof</label><input id="f${b.id}-proof" type="number" step="0.1" value="${b.proof ?? ''}"></div>
+    <div class="field"><label>Availability</label>
+      <select id="f${b.id}-rarity">${[1,2,3,4,5].map(n => `<option value="${n}" ${n === (b.rarity || 1) ? 'selected' : ''}>${n} — ${RARITY[n]}</option>`).join('')}</select></div>
+  </div>
+  ${imageField(`f${b.id}-image`, 'bottles', b.id, b.image_url)}
+  <div class="field"><label>Tasting notes</label><input id="f${b.id}-notes" value="${esc(b.tasting_notes || '')}"></div>
+  <div class="field"><label>Description / the story</label><textarea id="f${b.id}-desc" rows="3">${esc(b.description || '')}</textarea></div>
+  <div class="field"><label>Cocktails — one per line: Name :: recipe</label>
+    <textarea id="f${b.id}-cocktails" rows="3" placeholder="Old Fashioned :: 2 oz bourbon, sugar cube, 2 dashes bitters…">${esc(cocktailsToLines(b.cocktails))}</textarea>
+    <div class="hint">Example: <i>Old Fashioned :: 2 oz bourbon, sugar cube, 2 dashes Angostura, orange peel</i></div>
+  </div>
+  <div style="border:1px dashed var(--card-line, #e3dccc);border-radius:10px;padding:14px;margin-top:10px;">
+    <p class="muted" style="margin:0 0 10px;font-size:13px;"><b>Site display details</b> — these drive the Discover card, the tier journey, the Regions page, and Aidan's tasting answers.</p>
+    <div class="grid-3">
+      <div class="field"><label>Discovery tier</label>
+        <select id="f${b.id}-tier">${['core','expand','showcase'].map(t => `<option ${t === (b.wc_tier || 'core') ? 'selected' : ''}>${t}</option>`).join('')}</select></div>
+      <div class="field"><label>Availability tag</label>
+        <select id="f${b.id}-avail">${['easy to find','limited availability','premium'].map(a => `<option ${a === (b.wc_availability || 'easy to find') ? 'selected' : ''}>${a}</option>`).join('')}</select></div>
+      <div class="field"><label>Region (drives the Regions page)</label>
+        <input id="f${b.id}-region" list="dl-regions" value="${esc(b.wc_region || '')}" placeholder="e.g. Kentucky, USA">
+        <datalist id="dl-regions">
+          <option value="Kentucky, USA"><option value="Tennessee, USA"><option value="Vermont, USA"><option value="Ireland">
+          <option value="Speyside, Scotland"><option value="Islay, Scotland"><option value="Isle of Skye, Scotland"><option value="Orkney, Scotland">
+          <option value="Highlands, Scotland"><option value="Scotland"><option value="Japan">
+        </datalist></div>
+    </div>
+    <div class="grid-3">
+      <div class="field"><label>Location (city / distillery town)</label><input id="f${b.id}-location" value="${esc(b.wc_location || '')}" placeholder="e.g. Frankfort, Kentucky"></div>
+      <div class="field"><label>Price range shown</label><input id="f${b.id}-pricerange" value="${esc(b.price_range || '')}" placeholder="e.g. $28–35"></div>
+      <div class="field"><label>ABV · proof shown</label><input id="f${b.id}-abvproof" value="${esc(b.abv_proof || '')}" placeholder="e.g. 45% · 90 proof"></div>
+    </div>
+    <div class="grid-2">
+      <div class="field"><label>Age statement</label><input id="f${b.id}-age" value="${esc(b.age_statement || '')}" placeholder="e.g. None stated / 12 years"></div>
+      <div class="field"><label>Cask</label><input id="f${b.id}-cask" value="${esc(b.wc_cask || '')}" placeholder="e.g. New charred American oak"></div>
+    </div>
+    <div class="field"><label>Card blurb (one short sentence on the Discover card)</label><input id="f${b.id}-short" value="${esc(b.wc_short || '')}" placeholder="e.g. The everyday benchmark — soft, sweet, balanced."></div>
+    <div class="grid-3">
+      <div class="field"><label>Nose</label><input id="f${b.id}-nose" value="${esc(b.wc_nose || '')}"></div>
+      <div class="field"><label>Palate</label><input id="f${b.id}-palate" value="${esc(b.wc_palate || '')}"></div>
+      <div class="field"><label>Finish</label><input id="f${b.id}-finish" value="${esc(b.wc_finish || '')}"></div>
+    </div>
+    <div class="field"><label>Best for (helps Aidan recommend it)</label><input id="f${b.id}-bestfor" value="${esc(b.wc_best_for || '')}" placeholder="e.g. First bourbon, everyday sipping, cocktails"></div>
+  </div>`;
+}
+function collect(b){
+  const v = suffix => $(`f${b.id}-${suffix}`).value;
+  const price = v('price').trim();
+  const proof = v('proof').trim();
+  return {
+    name: v('name').trim(),
+    company: v('company').trim(),
+    wc_category: v('type'),
+    type: CATEGORY_IDS[v('type')] || v('type'),
+    price: price === '' ? null : +price,
+    proof: proof === '' ? null : +proof,
+    rarity: +v('rarity'),
+    image_url: v('image').trim() || null,
+    tasting_notes: v('notes').trim(),
+    description: v('desc').trim(),
+    cocktails: linesToCocktails(v('cocktails')),
+    wc_tier: v('tier'),
+    wc_availability: v('avail'),
+    wc_region: v('region').trim(),
+    wc_location: v('location').trim(),
+    price_range: v('pricerange').trim(),
+    abv_proof: v('abvproof').trim(),
+    age_statement: v('age').trim(),
+    wc_cask: v('cask').trim(),
+    wc_short: v('short').trim(),
+    wc_nose: v('nose').trim(),
+    wc_palate: v('palate').trim(),
+    wc_finish: v('finish').trim(),
+    wc_best_for: v('bestfor').trim()
+  };
+}
+
+/* ---------- pending review ---------- */
+let pendingView = 'queue';
+function renderPending(){
+  const queue = pending(), later = savedLater();
+  const list = pendingView === 'saved' ? later : queue;
+  const emptyMsg = pendingView === 'saved'
+    ? '<div class="empty">Nothing saved for later.</div>'
+    : '<div class="empty">No suggestions waiting — the queue is clear. 🥃</div>';
+  $('panel').innerHTML = `
+    <div class="controls">
+      <button class="btn ${pendingView === 'queue' ? '' : 'ghost'}" onclick="pendingView='queue'; renderPending();">Needs review · ${queue.length}</button>
+      <button class="btn ${pendingView === 'saved' ? '' : 'ghost'}" onclick="pendingView='saved'; renderPending();">Saved for later · ${later.length}</button>
+    </div>` +
+    (list.length ? '' : emptyMsg) +
+    list.map(b => `
+    <div class="rev-card pending">
+      <div class="rev-head">
+        <span class="pill pending">${pendingView === 'saved' ? 'Saved for later' : 'Pending'}</span>
+        <h3>${esc(b.name)}</h3>
+        <span class="sub">suggested by ${esc(namesById[b.submitted_by] || 'a member')}</span>
+      </div>
+      ${bottleForm(b)}
+      <div class="acts">
+        <button class="btn" onclick="saveBottle(${b.id}, true)">✓ Publish to shelf</button>
+        <button class="btn ghost" onclick="saveBottle(${b.id}, false)">Save draft</button>
+        ${pendingView === 'saved'
+          ? `<button class="btn ghost" onclick="backToPending(${b.id})">↩ Move back to Pending</button>`
+          : `<button class="btn ghost" onclick="saveForLater(${b.id})">🕓 Save for Later</button>`}
+        <button class="btn danger" onclick="deleteBottle(${b.id})">Reject &amp; delete</button>
+      </div>
+      <div id="m${b.id}" class="form-msg"></div>
+    </div>`).join('');
+}
+async function saveForLater(id){
+  const { error } = await db.from('bottles').update({ saved_for_later: true }).eq('id', id);
+  if (error) return msg($('m' + id), error.message + ' — has saved-for-later-setup.sql been run?', 'err');
+  allBottles.find(x => x.id === id).saved_for_later = true;
+  renderCounts(); renderPending();
+}
+async function backToPending(id){
+  const { error } = await db.from('bottles').update({ saved_for_later: false }).eq('id', id);
+  if (error) return msg($('m' + id), error.message, 'err');
+  allBottles.find(x => x.id === id).saved_for_later = false;
+  renderCounts(); renderPending();
+}
+
+/* ---------- pending cocktails (member suggestions) ---------- */
+function renderPendingCocktails(){
+  if (!cocktailsOk) { $('panel').innerHTML = '<div class="empty">The cocktail library table isn\u2019t set up yet — run <b>cocktails-upgrade.sql</b> first.</div>'; return; }
+  const list = pendingCocktails();
+  $('panel').innerHTML = (list.length ? '' : '<div class="empty">No cocktail suggestions waiting — the queue is clear. 🍸</div>') +
+    list.map(c => `
+    <div class="rev-card pending">
+      <div class="rev-head">
+        <span class="pill pending">Pending</span>
+        <h3>${esc(c.name)}</h3>
+        <span class="sub">suggested by ${esc(namesById[c.submitted_by] || 'a member')}</span>
+      </div>
+      <p class="muted" style="font-size:13.5px;margin:2px 0 10px;">Fill in the ingredients, method, and match categories below, then publish — or reject to remove it.</p>
+      ${cocktailForm(c)}
+      <div class="acts">
+        <button class="btn" onclick="approveCocktail(${c.id})">✓ Publish to Cocktails</button>
+        <button class="btn danger" onclick="deleteCocktail(${c.id})">Reject &amp; delete</button>
+      </div>
+      <div id="cm${c.id}" class="form-msg"></div>
+    </div>`).join('');
+}
+function approveCocktail(id){
+  const pub = $(`c${id}-pub`); if (pub) pub.checked = true;
+  saveCocktail(id);
+}
+
+/* ---------- the shelf ---------- */
+let shelfSearch = '', editingId = null;
+function renderShelf(){
+  const q = shelfSearch.toLowerCase();
+  const list = shelf().filter(b => !q || b.name.toLowerCase().includes(q) || (b.company || '').toLowerCase().includes(q));
+  $('panel').innerHTML = `
+    <div class="controls">
+      <input type="search" id="shelf-q" placeholder="Search the shelf…" value="${esc(shelfSearch)}" oninput="shelfSearch=this.value; renderShelf(); refocusSearch('shelf-q');">
+      <button class="btn ghost" onclick="addBottle()">+ Add a bottle directly</button>
+    </div>` +
+    (list.length ? '' : '<div class="empty">Nothing matches that search.</div>') +
+    list.map(b => editingId === b.id ? `
+    <div class="rev-card">
+      <div class="rev-head"><span class="pill live">Live</span><h3>Editing: ${esc(b.name)}</h3></div>
+      ${bottleForm(b)}
+      <div class="acts">
+        <button class="btn" onclick="saveBottle(${b.id}, true)">Save changes</button>
+        <button class="btn ghost" onclick="editingId=null; renderShelf();">Cancel</button>
+        <button class="btn ghost" onclick="unpublishBottle(${b.id})">Unpublish (hide from site)</button>
+        <button class="btn danger" onclick="deleteBottle(${b.id})">Delete forever</button>
+      </div>
+      <div id="m${b.id}" class="form-msg"></div>
+    </div>` : `
+    <div class="shelf-row">
+      <div class="info"><b>${esc(b.name)}</b><small>${esc(b.company)} · ${esc(b.type)} · ${RARITY[b.rarity] || '—'}${b.price != null ? ' · $' + Number(b.price).toFixed(0) : ''}</small></div>
+      <button class="btn ghost sm" onclick="editingId=${b.id}; renderShelf();">Edit</button>
+    </div>`).join('');
+}
+async function addBottle(){
+  const { data, error } = await db.from('bottles')
+    .insert({ name: 'New bottle', company: '', type: 'Bourbon', wc_category: 'bourbon', rarity: 1, tasting_notes: '', description: '', published: false })
+    .select().single();
+  if (error) return alert(error.message);
+  allBottles.unshift(data);
+  renderCounts(); setTab('pending');
+}
+
+/* ---------- shared bottle actions ---------- */
+async function saveBottle(id, publish){
+  const b = allBottles.find(x => x.id === id);
+  const box = $('m' + id);
+  const payload = collect(b);
+  if (!payload.name || !payload.company) return msg(box, 'Name and distillery are required before saving.', 'err');
+  payload.published = publish;
+  if (publish && b.saved_for_later) payload.saved_for_later = false;
+  const { error } = await db.from('bottles').update(payload).eq('id', id);
+  if (error) return msg(box, error.message, 'err');
+  Object.assign(b, payload);
+  msg(box, publish ? 'Published — it\u2019s live on the shelf. 🥃' : 'Draft saved (still hidden from members).', 'ok');
+  setTimeout(() => { editingId = null; renderCounts(); render(); }, 800);
+}
+async function unpublishBottle(id){
+  if (!confirm('Hide this bottle from the site? Members\u2019 ratings and bar entries are kept.')) return;
+  const { error } = await db.from('bottles').update({ published: false }).eq('id', id);
+  if (error) return alert(error.message);
+  allBottles.find(x => x.id === id).published = false;
+  editingId = null; renderCounts(); render();
+}
+async function deleteBottle(id){
+  if (!confirm('Delete this bottle permanently? This also removes any ratings, bar entries, and tastings attached to it.')) return;
+  const { error } = await db.from('bottles').delete().eq('id', id);
+  if (error) return alert(error.message);
+  allBottles = allBottles.filter(x => x.id !== id);
+  editingId = null; renderCounts(); render();
+}
+
+/* ---------- aidan q&a ---------- */
+/* linked bottles/cocktails per Q&A row (keyed by row id, or 'new' for the add form) */
+let faqLinks = {};
+function initFaqLinks(){
+  faqLinks = { 'new': { bottles: [], cocktails: [] } };
+  faqRows.forEach(r => faqLinks[r.id] = {
+    bottles: (r.bottle_ids || []).slice(),
+    cocktails: (r.cocktail_slugs || []).slice()
+  });
+}
+function linkPicker(rowId){
+  const L = faqLinks[rowId] || (faqLinks[rowId] = { bottles: [], cocktails: [] });
+  const bChips = L.bottles.map(id => {
+    const b = allBottles.find(x => x.id === id);
+    return `<span class="link-chip">🥃 ${esc(b ? b.name : 'bottle #' + id)}<button onclick="removeFaqLink('${rowId}','bottles',${JSON.stringify(id)})" title="Remove">×</button></span>`;
+  }).join('');
+  const cChips = L.cocktails.map(slug => {
+    const c = cocktailsRows.find(x => x.slug === slug);
+    return `<span class="link-chip">🍸 ${esc(c ? c.name : slug)}<button onclick="removeFaqLink('${rowId}','cocktails','${esc(slug)}')" title="Remove">×</button></span>`;
+  }).join('');
+  return `
+  <div class="field"><label>Linked bottles &amp; cocktails — shown as tappable options under this answer</label>
+    <div class="link-chips" id="chips-${rowId}">${bChips}${cChips}${!bChips && !cChips ? '<span class="hint" style="margin:0;">None yet — pick below.</span>' : ''}</div>
+    <div class="grid-2" style="margin-top:8px;">
+      <input list="dl-bottles" id="pick-b-${rowId}" placeholder="＋ Type a bottle name…" onchange="addFaqLink('${rowId}','bottles',this)">
+      <input list="dl-cocktails" id="pick-c-${rowId}" placeholder="＋ Type a cocktail name…" onchange="addFaqLink('${rowId}','cocktails',this)">
+    </div>
+  </div>`;
+}
+function addFaqLink(rowId, kind, input){
+  const val = input.value.trim();
+  if (!val) return;
+  const L = faqLinks[rowId];
+  if (kind === 'bottles') {
+    const b = allBottles.find(x => x.name.toLowerCase() === val.toLowerCase());
+    if (!b) return;                          // must match a real bottle
+    if (!L.bottles.includes(b.id)) L.bottles.push(b.id);
+  } else {
+    const c = cocktailsRows.find(x => x.name.toLowerCase() === val.toLowerCase());
+    if (!c) return;
+    if (!L.cocktails.includes(c.slug)) L.cocktails.push(c.slug);
+  }
+  input.value = '';
+  refreshChips(rowId);
+}
+function removeFaqLink(rowId, kind, key){
+  const L = faqLinks[rowId];
+  L[kind] = L[kind].filter(x => x !== key);
+  refreshChips(rowId);
+}
+function refreshChips(rowId){
+  const holder = $('chips-' + rowId);
+  if (!holder) return;
+  const wrap = document.createElement('div');
+  wrap.innerHTML = linkPicker(rowId);
+  holder.replaceWith(wrap.querySelector('.link-chips'));
+}
+function keywordGuess(q){
+  const stop = new Set(['what','when','where','which','about','does','have','this','that','with','from','your','you','the','and','for','are','can','how','why','who','will','would','should','could','there','their','them']);
+  return String(q).toLowerCase().replace(/[^a-z0-9\s]/g,' ').split(/\s+/)
+    .filter(w => w.length > 3 && !stop.has(w)).slice(0, 3).join(', ');
+}
+function renderFaq(){
+  if (!Object.keys(faqLinks).length || !faqLinks['new']) initFaqLinks();
+  const dls = `
+    <datalist id="dl-bottles">${allBottles.filter(b => b.published !== false).map(b => `<option value="${esc(b.name)}">`).join('')}</datalist>
+    <datalist id="dl-cocktails">${cocktailsRows.filter(c => c.published !== false).map(c => `<option value="${esc(c.name)}">`).join('')}</datalist>`;
+  $('panel').innerHTML = dls + `
+    ${faqDraft ? `
+    <div class="rev-card" style="border-color: rgba(193,83,31,0.5);">
+      <div class="rev-head"><h3 style="font-size:15px;">Answering a member\u2019s question</h3></div>
+      <p style="font-size:14.5px;">\u201C${esc(faqDraft.question)}\u201D</p>
+      <p class="hint">Adding the answer below will also remove this from the Unanswered queue.
+        <button class="btn ghost sm" style="margin-left:8px;" onclick="faqDraft=null; renderFaq();">Cancel</button></p>
+    </div>` : ''}
+    <div class="rev-card" style="border-style:dashed;">
+      <div class="rev-head"><h3>Add a new answer</h3></div>
+      <div class="field"><label>Trigger keywords — comma separated, lowercase</label>
+        <input id="new-keys" placeholder="shipping, do you ship, delivery" value="${faqDraft ? esc(keywordGuess(faqDraft.question)) : ''}">
+        <div class="hint">If a member\u2019s question to Aidan contains ANY of these words/phrases, he replies with your answer below. These run before his built-in answers, so you can override those too.</div></div>
+      <div class="field"><label>Aidan\u2019s answer</label><textarea id="new-answer" rows="3" placeholder="We\u2019re a guide, not a store — no shipping here! But every bottle page shows how hard it is to find near you."></textarea></div>
+      ${linkPicker('new')}
+      <button class="btn" onclick="addFaq()">Add answer</button>
+      <div id="new-faq-msg" class="form-msg"></div>
+    </div>
+    ${faqRows.map(r => `
+    <div class="faq-row ${r.active ? '' : 'inactive'}">
+      <label class="check-line" style="text-transform:none; letter-spacing:0; font-size:14px;">
+        <input type="checkbox" id="q${r.id}-active" ${r.active ? 'checked' : ''}> Active ${r.active ? '' : '(currently ignored by Aidan)'}
+      </label>
+      <div class="field"><label>Trigger keywords</label><input id="q${r.id}-keys" value="${esc(r.keywords)}"></div>
+      <div class="field"><label>Answer</label><textarea id="q${r.id}-answer" rows="3">${esc(r.answer)}</textarea></div>
+      ${linkPicker(r.id)}
+      <div class="acts">
+        <button class="btn sm" onclick="saveFaq(${r.id})">Save</button>
+        <button class="btn danger sm" onclick="deleteFaq(${r.id})">Delete</button>
+      </div>
+      <div id="qm${r.id}" class="form-msg"></div>
+    </div>`).join('')}`;
+}
+/* Typing in a search box re-renders the whole panel, which destroys the
+   focused input and closes the on-screen keyboard on phones. This puts the
+   cursor straight back so you can keep typing without interruption. */
+function refocusSearch(id){
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.focus();
+  try { el.setSelectionRange(el.value.length, el.value.length); } catch (_) {}
+}
+
+/* ---------- image uploads (bottles + cocktails) ---------- */
+async function uploadImage(folder, recordId, fileInput, targetFieldId){
+  const file = fileInput.files && fileInput.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) return alert('Please choose an image file (JPG, PNG, or WebP).');
+  if (file.size > 5 * 1024 * 1024) return alert('That image is over 5 MB — please resize it and try again.');
+  const btn = fileInput.closest('.up-btn');
+  const oldLabel = btn ? btn.firstChild.textContent : '';
+  if (btn) btn.firstChild.textContent = 'Uploading…';
+  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+  const path = `${folder}/${recordId}-${Date.now()}.${ext}`;
+  const { error } = await db.storage.from('images').upload(path, file, { upsert: true, cacheControl: '3600', contentType: file.type });
+  if (btn) btn.firstChild.textContent = oldLabel;
+  fileInput.value = '';
+  if (error) return alert(error.message + '\n\n(Have you run images-upgrade.sql?)');
+  const { data } = db.storage.from('images').getPublicUrl(path);
+  $(targetFieldId).value = data.publicUrl;
+  const row = $(targetFieldId).closest('.img-row');
+  if (row) {
+    let t = row.querySelector('img.thumb');
+    if (!t) { t = document.createElement('img'); t.className = 'thumb'; row.prepend(t); }
+    t.src = data.publicUrl;
+  }
+}
+function imageField(fieldId, folder, recordId, current, labelText){
+  return `<div class="field"><label>${esc(labelText || 'Photo')}</label>
+    <div class="img-row">
+      ${current ? `<img class="thumb" src="${esc(current)}">` : ''}
+      <input id="${fieldId}" value="${esc(current || '')}" placeholder="https://… or Upload →">
+      <label class="btn ghost sm up-btn">Upload<input type="file" accept="image/*" hidden onchange="uploadImage('${folder}', ${recordId}, this, '${fieldId}')"></label>
+    </div>
+    <div class="hint">JPG / PNG / WebP up to 5 MB. Uploading fills the URL — remember to hit Save to attach it to the record.</div>
+  </div>`;
+}
+
+/* ---------- cocktail library ---------- */
+const DIFFS = ['Easy','Medium','Hard'];
+function slugify(s){ return String(s).toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
+
+/* ----- "Bottles to feature" picker (stores bottle names) ----- */
+function initCocktailPairings(){
+  cocktailPairings = {};
+  cocktailsRows.forEach(c => {
+    let names = Array.isArray(c.pairings)
+      ? c.pairings.map(p => typeof p === 'string' ? p : (p && (p.name || p.n))).filter(Boolean)
+      : [];
+    // Pre-fill the 12 classics so their current bottles aren't lost.
+    if (!names.length) {
+      const seed = BUILTIN_PAIRINGS[c.slug] || BUILTIN_PAIRINGS[slugify(c.name || '')];
+      if (seed) names = seed.slice();
+    }
+    cocktailPairings[c.id] = names;
+  });
+}
+function cocktailBottlePicker(c){
+  const names = cocktailPairings[c.id] || [];
+  const chips = names.map(n =>
+    `<span class="link-chip">🥃 ${esc(n)}<button onclick="removeCocktailBottle(${c.id}, ${JSON.stringify(n)})" title="Remove">×</button></span>`
+  ).join('');
+  return `
+  <div class="field"><label>Bottles to feature — shown as tappable links on this cocktail\u2019s page</label>
+    <datalist id="dl-cb-${c.id}">${allBottles.filter(b => b.published !== false).map(b => `<option value="${esc(b.name)}">`).join('')}</datalist>
+    <div class="link-chips" id="cbchips-${c.id}">${chips || '<span class="hint" style="margin:0;">None yet — type a bottle name below to add one.</span>'}</div>
+    <input list="dl-cb-${c.id}" id="pick-cb-${c.id}" placeholder="＋ Type a bottle name…" onchange="addCocktailBottle(${c.id}, this)" style="margin-top:8px;">
+    <div class="hint">These appear in the \u201CBottles to use\u201D section on the cocktail\u2019s own page. The classic recipes come pre-filled, so nothing is lost.</div>
+  </div>`;
+}
+function addCocktailBottle(id, input){
+  const val = input.value.trim();
+  if (!val) return;
+  const b = allBottles.find(x => x.name.toLowerCase() === val.toLowerCase());
+  if (!b) { input.value = ''; return; }        // must match a real shelf bottle
+  const list = cocktailPairings[id] || (cocktailPairings[id] = []);
+  if (!list.includes(b.name)) list.push(b.name);
+  input.value = '';
+  refreshCocktailBottleChips(id);
+}
+function removeCocktailBottle(id, name){
+  cocktailPairings[id] = (cocktailPairings[id] || []).filter(x => x !== name);
+  refreshCocktailBottleChips(id);
+}
+function refreshCocktailBottleChips(id){
+  const holder = $('cbchips-' + id);
+  if (!holder) return;
+  const wrap = document.createElement('div');
+  wrap.innerHTML = cocktailBottlePicker(cocktailsRows.find(c => c.id === id) || { id });
+  holder.replaceWith(wrap.querySelector('.link-chips'));
+}
+
+function cocktailForm(c){
+  const ing = (c.ingredients || []).map(x => `${x[0]} :: ${x[1]}`).join('\n');
+  const met = (c.method || []).join('\n');
+  return `
+  <div class="grid-3">
+    <div class="field"><label>Name</label><input id="c${c.id}-name" value="${esc(c.name || '')}"></div>
+    <div class="field"><label>Emoji</label><input id="c${c.id}-emoji" value="${esc(c.emoji || '🥃')}"></div>
+    <div class="field"><label>URL slug</label><input id="c${c.id}-slug" value="${esc(c.slug || '')}" placeholder="auto from name if blank"></div>
+  </div>
+  <div class="grid-2">
+    <div class="field"><label>Spirit line shown (e.g. "Bourbon or Rye")</label><input id="c${c.id}-spirit" value="${esc(c.spirit || '')}"></div>
+    <div class="field"><label>Match categories — comma separated (Bourbon, Rye, Scotch, Irish, Japanese)</label><input id="c${c.id}-types" value="${esc((c.types || []).join(', '))}"></div>
+  </div>
+  <div class="grid-3">
+    <div class="field"><label>Difficulty</label><select id="c${c.id}-diff">${DIFFS.map(d => `<option ${d === (c.diff || 'Easy') ? 'selected' : ''}>${d}</option>`).join('')}</select></div>
+    <div class="field"><label>Time (e.g. "4 min")</label><input id="c${c.id}-time" value="${esc(c.time || '')}"></div>
+    <div class="field"><label>ABV (e.g. "~32%")</label><input id="c${c.id}-abv" value="${esc(c.abv || '')}"></div>
+  </div>
+  <div class="field"><label>Tagline (one sentence on the card)</label><input id="c${c.id}-tagline" value="${esc(c.tagline || '')}"></div>
+  <div class="grid-2">
+    <div>${imageField(`c${c.id}-thumb`, 'cocktails/thumbs', c.id, c.thumb_url, 'Thumbnail photo (square — shown on the cocktail cards)')}</div>
+    <div>${imageField(`c${c.id}-image`, 'cocktails', c.id, c.image_url, 'Full-page photo (portrait — shown on the cocktail\u2019s own page)')}</div>
+  </div>
+  <div class="field"><label>Ingredients — one per line: Ingredient :: Amount</label>
+    <textarea id="c${c.id}-ing" rows="5" placeholder="Bourbon or rye :: 2 oz">${esc(ing)}</textarea></div>
+  <div class="field"><label>Method — one step per line, in order</label>
+    <textarea id="c${c.id}-met" rows="5" placeholder="Muddle the sugar cube with bitters…">${esc(met)}</textarea></div>
+  ${cocktailBottlePicker(c)}
+  <label class="check-line"><input type="checkbox" id="c${c.id}-pub" ${c.published !== false ? 'checked' : ''}> Published (unticked = draft, hidden from members)</label>`;
+}
+function collectCocktail(c){
+  const v = k => $(`c${c.id}-${k}`).value;
+  return {
+    name: v('name').trim(),
+    emoji: v('emoji').trim() || '🥃',
+    slug: slugify(v('slug').trim() || v('name')),
+    spirit: v('spirit').trim(),
+    types: v('types').split(',').map(t => t.trim()).filter(Boolean),
+    diff: v('diff'),
+    time: v('time').trim() || '5 min',
+    abv: v('abv').trim(),
+    tagline: v('tagline').trim(),
+    image_url: v('image').trim() || null,
+    thumb_url: v('thumb').trim() || null,
+    ingredients: v('ing').split('\n').map(l => l.trim()).filter(Boolean).map(l => {
+      const i = l.indexOf('::');
+      return i === -1 ? [l, ''] : [l.slice(0, i).trim(), l.slice(i + 2).trim()];
+    }),
+    method: v('met').split('\n').map(l => l.trim()).filter(Boolean),
+    pairings: (cocktailPairings[c.id] || []).slice(),
+    published: $(`c${c.id}-pub`).checked
+  };
+}
+function renderCocktails(){
+  if (!cocktailsOk) {
+    $('panel').innerHTML = '<div class="empty">The cocktail library table isn\u2019t set up yet — run <b>cocktails-upgrade.sql</b> in the Supabase SQL Editor. Until then, the site serves its 12 built-in recipes.</div>';
+    return;
+  }
+  $('panel').innerHTML = `
+    <div class="controls" style="align-items:center;">
+      <p class="muted" style="font-size:13.5px; flex:1; min-width:220px;">These recipes power the Cocktails page, bottle pairings, and Aidan\u2019s cocktail answers. Changes are live immediately.</p>
+      <button class="btn ghost" onclick="addCocktail()">+ New recipe</button>
+    </div>` +
+    (cocktailsRows.length ? '' : '<div class="empty">No recipes yet — add your first, or re-run cocktails-upgrade.sql to load the classic 12.</div>') +
+    cocktailsRows.filter(c => !(c.published === false && c.submitted_by)).map(c => editingCocktail === c.id ? `
+    <div class="rev-card">
+      <div class="rev-head"><span class="pill ${c.published !== false ? 'live' : 'pending'}">${c.published !== false ? 'Live' : 'Draft'}</span><h3>Editing: ${esc(c.name)}</h3></div>
+      ${cocktailForm(c)}
+      <div class="acts">
+        <button class="btn" onclick="saveCocktail(${c.id})">Save recipe</button>
+        <button class="btn ghost" onclick="editingCocktail=null; renderCocktails();">Cancel</button>
+        <button class="btn danger" onclick="deleteCocktail(${c.id})">Delete</button>
+      </div>
+      <div id="cm${c.id}" class="form-msg"></div>
+    </div>` : `
+    <div class="shelf-row">
+      ${(c.thumb_url || c.image_url) ? `<img class="thumb" style="width:46px;height:46px;object-fit:cover;border-radius:8px;border:1px solid var(--card-line);flex:none;" src="${esc(c.thumb_url || c.image_url)}">` : ''}
+      <div class="info"><b>${esc(c.emoji)} ${esc(c.name)} ${c.published === false ? '<span class="pill pending" style="margin-left:6px;">Draft</span>' : ''}</b>
+        <small>${esc(c.spirit)} · ${esc(c.diff)} · ${esc(c.time)} · matches: ${esc((c.types || []).join(', ') || '—')}</small></div>
+      <button class="btn ghost sm" onclick="editingCocktail=${c.id}; renderCocktails();">Edit</button>
+    </div>`).join('');
+}
+async function addCocktail(){
+  const { data, error } = await db.from('cocktails')
+    .insert({ slug: 'new-recipe-' + Date.now(), name: 'New recipe', published: false, sort: 500 })
+    .select().single();
+  if (error) return alert(error.message);
+  cocktailsRows.push(data);
+  cocktailPairings[data.id] = [];
+  editingCocktail = data.id;
+  renderCounts(); renderCocktails();
+}
+async function saveCocktail(id){
+  const c = cocktailsRows.find(x => x.id === id);
+  const box = $('cm' + id);
+  const payload = collectCocktail(c);
+  if (!payload.name || payload.name === 'New recipe') return msg(box, 'Give the recipe a real name first.', 'err');
+  if (!payload.ingredients.length || !payload.method.length) return msg(box, 'At least one ingredient and one method step are required.', 'err');
+  if (!payload.types.length) return msg(box, 'Add at least one match category so bottle pairing works.', 'err');
+  const { error } = await db.from('cocktails').update(payload).eq('id', id);
+  if (error) {
+    if (/pairings/.test(error.message)) return msg(box, 'The pairings column isn\u2019t in your database yet — run cocktail-bottles-setup.sql in the Supabase SQL Editor, then save again.', 'err');
+    if (/thumb_url/.test(error.message)) return msg(box, 'The thumb_url column isn\u2019t in your database yet — run cocktail-images-upgrade.sql in the Supabase SQL Editor, then save again.', 'err');
+    return msg(box, error.message.includes('duplicate') ? 'That URL slug is already used by another recipe.' : error.message, 'err');
+  }
+  Object.assign(c, payload);
+  msg(box, payload.published ? 'Saved — live on the Cocktails page now. 🍸' : 'Draft saved (hidden from members).', 'ok');
+  setTimeout(() => { editingCocktail = null; renderCocktails(); }, 800);
+}
+async function deleteCocktail(id){
+  if (!confirm('Delete this recipe permanently?')) return;
+  const { error } = await db.from('cocktails').delete().eq('id', id);
+  if (error) return alert(error.message);
+  cocktailsRows = cocktailsRows.filter(x => x.id !== id);
+  editingCocktail = null;
+  renderCounts(); renderCocktails();
+}
+
+/* ---------- Featured Add-Ons ---------- */
+function addonForm(a){
+  return `
+  <div class="grid-2">
+    <div class="field"><label>Name</label><input id="a${a.id}-name" value="${esc(a.name || '')}" placeholder="e.g. Rocks Glasses"></div>
+    <div class="field"><label>Sort order (lower shows first)</label><input id="a${a.id}-sort" type="number" value="${esc(a.sort ?? 500)}"></div>
+  </div>
+  <div class="grid-2">
+    <div class="field"><label>Section heading (groups tiles, e.g. "Essentials")</label><input id="a${a.id}-section" value="${esc(a.section || '')}" placeholder="Essentials"></div>
+    <div class="field"><label>Section subtitle (small grey line, e.g. "Get these before anything else")</label><input id="a${a.id}-note" value="${esc(a.section_note || '')}" placeholder="Get these before anything else"></div>
+  </div>
+  <div class="field"><label>Description (the paragraph on the tile)</label>
+    <textarea id="a${a.id}-blurb" rows="3" placeholder="The everyday glass — pour it neat or over ice, this is the one you reach for most.">${esc(a.blurb || '')}</textarea></div>
+  <div>${imageField(`a${a.id}-image`, 'add-ons', a.id, a.image_url, 'Photo (square — shown on the add-on tile)')}</div>
+  <label class="check-line"><input type="checkbox" id="a${a.id}-pub" ${a.published !== false ? 'checked' : ''}> Published (unticked = draft, hidden from members)</label>`;
+}
+function collectAddon(a){
+  const v = k => $(`a${a.id}-${k}`).value;
+  return {
+    name: v('name').trim(),
+    section: v('section').trim(),
+    section_note: v('note').trim(),
+    blurb: v('blurb').trim(),
+    image_url: v('image').trim() || null,
+    sort: parseInt(v('sort'), 10) || 500,
+    published: $(`a${a.id}-pub`).checked
+  };
+}
+function renderAddons(){
+  if (!addonsOk) {
+    $('panel').innerHTML = '<div class="empty">The add-ons table isn\u2019t set up yet — run <b>add-ons-setup.sql</b> in the Supabase SQL Editor, then reload this page.</div>';
+    return;
+  }
+  $('panel').innerHTML = `
+    <div class="controls" style="align-items:center;">
+      <p class="muted" style="font-size:13.5px; flex:1; min-width:220px;">Specialty gear shown on the Featured Add-Ons page (linked from the bottom of Discover &amp; Cocktails). Changes are live immediately.</p>
+      <button class="btn ghost" onclick="addAddon()">+ New add-on</button>
+    </div>` +
+    (addonsRows.length ? '' : '<div class="empty">No add-ons yet — add your first with the button above.</div>') +
+    addonsRows.map(a => editingAddon === a.id ? `
+    <div class="rev-card">
+      <div class="rev-head"><span class="pill ${a.published !== false ? 'live' : 'pending'}">${a.published !== false ? 'Live' : 'Draft'}</span><h3>Editing: ${esc(a.name)}</h3></div>
+      ${addonForm(a)}
+      <div class="acts">
+        <button class="btn" onclick="saveAddon(${a.id})">Save add-on</button>
+        <button class="btn ghost" onclick="editingAddon=null; renderAddons();">Cancel</button>
+        <button class="btn danger" onclick="deleteAddon(${a.id})">Delete</button>
+      </div>
+      <div id="am${a.id}" class="form-msg"></div>
+    </div>` : `
+    <div class="shelf-row">
+      ${a.image_url ? `<img class="thumb" style="width:46px;height:46px;object-fit:cover;border-radius:8px;border:1px solid var(--card-line);flex:none;" src="${esc(a.image_url)}">` : ''}
+      <div class="info"><b>${esc(a.name)} ${a.published === false ? '<span class="pill pending" style="margin-left:6px;">Draft</span>' : ''}</b>
+        <small>${esc(a.section || 'No section')}${a.blurb ? ' · ' + esc(a.blurb.slice(0, 60)) + (a.blurb.length > 60 ? '…' : '') : ''}</small></div>
+      <button class="btn ghost sm" onclick="editingAddon=${a.id}; renderAddons();">Edit</button>
+    </div>`).join('');
+}
+async function addAddon(){
+  const { data, error } = await db.from('add_ons')
+    .insert({ name: 'New add-on', published: false, sort: 500 })
+    .select().single();
+  if (error) return alert(error.message + '\n\n(Have you run add-ons-setup.sql?)');
+  addonsRows.push(data);
+  editingAddon = data.id;
+  renderCounts(); renderAddons();
+}
+async function saveAddon(id){
+  const a = addonsRows.find(x => x.id === id);
+  const box = $('am' + id);
+  const payload = collectAddon(a);
+  if (!payload.name || payload.name === 'New add-on') return msg(box, 'Give the add-on a real name first.', 'err');
+  const { error } = await db.from('add_ons').update(payload).eq('id', id);
+  if (error) return msg(box, error.message, 'err');
+  Object.assign(a, payload);
+  msg(box, payload.published ? 'Saved — live on the Featured Add-Ons page now. 🥃' : 'Draft saved (hidden from members).', 'ok');
+  setTimeout(() => { editingAddon = null; renderAddons(); }, 800);
+}
+async function deleteAddon(id){
+  if (!confirm('Delete this add-on permanently?')) return;
+  const { error } = await db.from('add_ons').delete().eq('id', id);
+  if (error) return alert(error.message);
+  addonsRows = addonsRows.filter(x => x.id !== id);
+  editingAddon = null;
+  renderCounts(); renderAddons();
+}
+
+/* ---------- answer feedback (thumbs) ---------- */
+let fbFilter = 'all';
+function renderFeedback(){
+  const list = feedback.filter(f => fbFilter === 'all' || f.verdict === fbFilter);
+  const ups = feedback.filter(f => f.verdict === 'up').length;
+  const downs = feedback.length - ups;
+  $('panel').innerHTML = `
+    <div class="controls" style="align-items:center;">
+      <p class="muted" style="font-size:13.5px; flex:1; min-width:220px;">
+        How members rated Aidan\u2019s answers — <b style="color:var(--ok)">${ups} 👍</b> · <b style="color:var(--danger)">${downs} 👎</b>.
+        Thumbs-down rows are the ones worth fixing.</p>
+      <select style="width:auto;" onchange="fbFilter=this.value; renderFeedback();">
+        <option value="all" ${fbFilter==='all'?'selected':''}>All votes</option>
+        <option value="down" ${fbFilter==='down'?'selected':''}>👎 only</option>
+        <option value="up" ${fbFilter==='up'?'selected':''}>👍 only</option>
+      </select>
+      ${feedback.length ? '<button class="btn danger sm" onclick="clearFeedback()">Clear all</button>' : ''}
+    </div>` +
+    (list.length ? '' : '<div class="empty">No votes here yet.</div>') +
+    list.map(f => `
+    <div class="rev-card" style="padding:16px 18px; ${f.verdict==='down' ? 'border-color: rgba(163,58,37,0.45);' : ''}">
+      <div class="rev-head" style="margin-bottom:8px;">
+        <span class="pill ${f.verdict==='down' ? 'down' : 'live'}">${f.verdict === 'up' ? '👍 Helpful' : '👎 Missed'}</span>
+        <span class="sub">${esc(namesById[f.user_id] || 'a member')} · ${new Date(f.created_at).toLocaleDateString()}</span>
+      </div>
+      <p style="font-size:14.5px; margin-bottom:6px;"><b>Q:</b> \u201C${esc(f.question)}\u201D</p>
+      <p class="muted" style="font-size:13.5px; white-space:pre-line;"><b>Aidan said:</b> ${esc(f.answer)}</p>
+      <div class="acts" style="margin-top:12px;">
+        ${f.verdict === 'down' ? `<button class="btn sm" onclick="improveAnswer(${f.id})">Improve this answer</button>` : ''}
+        <button class="btn ghost sm" onclick="dismissFeedback(${f.id})">Dismiss</button>
+      </div>
+    </div>`).join('');
+}
+function improveAnswer(id){
+  const f = feedback.find(x => x.id === id);
+  if (!f) return;
+  faqDraft = { id: f.id, question: f.question, src: 'feedback' };
+  setTab('faq');
+}
+async function dismissFeedback(id){
+  const { error } = await db.from('aidan_feedback').delete().eq('id', id);
+  if (error) return alert(error.message);
+  feedback = feedback.filter(x => x.id !== id);
+  renderCounts(); renderFeedback();
+}
+async function clearFeedback(){
+  if (!confirm('Clear all ' + feedback.length + ' feedback entries?')) return;
+  for (const f of feedback) await db.from('aidan_feedback').delete().eq('id', f.id);
+  feedback = [];
+  renderCounts(); renderFeedback();
+}
+
+/* ---------- site / beta feedback ---------- */
+function sfWho(f){
+  if (f.is_anonymous) return 'Anonymous';
+  const nm = (f.name || '').trim();
+  const em = (f.email || '').trim();
+  if (nm && em) return `${esc(nm)} · <a href="mailto:${esc(em)}">${esc(em)}</a>`;
+  if (nm) return esc(nm);
+  if (em) return `<a href="mailto:${esc(em)}">${esc(em)}</a>`;
+  return esc(namesById[f.user_id] || 'Member');
+}
+function renderSiteFeedback(){
+  const rows = siteFeedback.filter(f =>
+    siteFbFilter === 'all' ||
+    (siteFbFilter === 'new' && f.status !== 'reviewed') ||
+    (siteFbFilter === 'reviewed' && f.status === 'reviewed'));
+  const fresh = siteFeedback.filter(f => f.status !== 'reviewed').length;
+  const block = (label, text) => (text && String(text).trim())
+    ? `<p style="font-size:14px;margin:0 0 8px;"><b style="color:var(--faint);font-size:12px;letter-spacing:.04em;text-transform:uppercase;display:block;margin-bottom:2px;">${label}</b>${esc(text)}</p>`
+    : '';
+  $('panel').innerHTML = `
+    <div class="controls" style="align-items:center;">
+      <p class="muted" style="font-size:13.5px; flex:1; min-width:220px;">
+        Beta feedback from members trying out the site — <b>${siteFeedback.length}</b> total${fresh ? `, <b style="color:var(--terracotta)">${fresh} not yet reviewed</b>` : ''}.
+        Add notes and mark each one reviewed once you've read it.</p>
+      <select style="width:auto;" onchange="siteFbFilter=this.value; renderSiteFeedback();">
+        <option value="all" ${siteFbFilter==='all'?'selected':''}>All</option>
+        <option value="new" ${siteFbFilter==='new'?'selected':''}>New only</option>
+        <option value="reviewed" ${siteFbFilter==='reviewed'?'selected':''}>Reviewed only</option>
+      </select>
+    </div>` +
+    (rows.length ? '' : `<div class="empty">${siteFeedback.length ? 'Nothing in this filter.' : 'No site feedback yet. Once members submit the /feedback form, it lands here.'}</div>`) +
+    rows.map(f => {
+      const when = f.created_at ? new Date(f.created_at).toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' }) : '';
+      const reviewed = f.status === 'reviewed';
+      return `
+      <div class="rev-card" style="${reviewed ? '' : 'border-color: rgba(193,83,31,0.5);'}">
+        <div class="rev-head" style="margin-bottom:12px;">
+          <span style="color:var(--terracotta);font-size:16px;letter-spacing:1px;">${starsTxt(f.stars)}</span>
+          <span class="pill ${reviewed ? 'live' : 'pending'}">${reviewed ? 'Reviewed' : 'New'}</span>
+          <span class="sub">${sfWho(f)} · ${when}</span>
+        </div>
+        ${block('Area needing improvements', f.improvements)}
+        ${block('What they like about the site', f.likes)}
+        ${block('What should be added', f.additions)}
+        ${(!f.improvements && !f.likes && !f.additions) ? '<p class="muted" style="font-size:13px;margin:0 0 8px;">Star rating only — no written comments.</p>' : ''}
+        <div class="field" style="margin:10px 0 8px;">
+          <label>Your notes</label>
+          <textarea id="sfnote-${f.id}" rows="2" placeholder="Private notes, follow-ups, decisions…">${esc(f.admin_note || '')}</textarea>
+        </div>
+        <div class="acts">
+          <button class="btn sm" onclick="saveFbNote(${f.id})">Save note</button>
+          <button class="btn ghost sm" onclick="toggleFbStatus(${f.id})">${reviewed ? 'Mark as new' : 'Mark reviewed'}</button>
+          <button class="btn danger sm" onclick="deleteSiteFeedback(${f.id})">Delete</button>
+        </div>
+        <div id="sf-msg-${f.id}" class="form-msg"></div>
+      </div>`;
+    }).join('');
+}
+async function saveFbNote(id){
+  const box = $('sf-msg-' + id);
+  const el = $('sfnote-' + id);
+  const note = el ? el.value.trim() : '';
+  const { error } = await db.from('site_feedback').update({ admin_note: note || null }).eq('id', id);
+  if (error) { if (box) msg(box, error.message + ' — has feedback-setup.sql been run?', 'err'); return; }
+  const row = siteFeedback.find(x => x.id === id); if (row) row.admin_note = note || null;
+  if (box) msg(box, 'Note saved.', 'ok');
+}
+async function toggleFbStatus(id){
+  const row = siteFeedback.find(x => x.id === id); if (!row) return;
+  const next = row.status === 'reviewed' ? 'new' : 'reviewed';
+  const { error } = await db.from('site_feedback').update({ status: next }).eq('id', id);
+  if (error) { const box = $('sf-msg-' + id); if (box) msg(box, error.message, 'err'); return; }
+  row.status = next;
+  renderCounts(); renderSiteFeedback();
+}
+async function deleteSiteFeedback(id){
+  if (!confirm('Delete this feedback entry? This can\u2019t be undone.')) return;
+  const { error } = await db.from('site_feedback').delete().eq('id', id);
+  if (error) { const box = $('sf-msg-' + id); if (box) msg(box, error.message, 'err'); return; }
+  siteFeedback = siteFeedback.filter(x => x.id !== id);
+  renderCounts(); renderSiteFeedback();
+}
+
+/* ============================================================
+   USERS
+   Registered accounts, straight from auth.users via admin_users_list().
+   Blocking sets banned_until far in the future and drops the member's
+   sessions; deleting removes the account and everything attached to it.
+   Both go through SECURITY DEFINER functions that re-check is_admin(),
+   so the anon key in this page grants nothing on its own.
+   ============================================================ */
+function isBlocked(u){
+  return !!(u && u.banned_until && new Date(u.banned_until) > new Date());
+}
+function userName(u){
+  return (u.full_name || u.display_name || u.username || '').trim() || '—';
+}
+/* DOB arrives as raw text so one malformed value can't break the whole list. */
+function userDob(u){
+  const raw = String(u.date_of_birth || '').trim();
+  if (!raw) return { text: 'Not given', age: null };
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(raw);
+  if (!m) return { text: raw, age: null };
+  const y = +m[1], mo = +m[2], d = +m[3];
+  const dt = new Date(y, mo - 1, d);
+  if (dt.getFullYear() !== y || dt.getMonth() !== mo - 1 || dt.getDate() !== d) return { text: raw, age: null };
+  const now = new Date();
+  let age = now.getFullYear() - y;
+  const diff = now.getMonth() - (mo - 1);
+  if (diff < 0 || (diff === 0 && now.getDate() < d)) age--;
+  return { text: dt.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }), age: age };
+}
+function userDate(v){
+  return v ? new Date(v).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : '—';
+}
+
+function renderUsers(){
+  if (!usersOk) {
+    $('panel').innerHTML = `<div class="empty">The accounts list isn\u2019t wired up yet.
+      Run <b>users-admin-setup.sql</b> in Supabase\u2019s SQL Editor, then reload this page.
+      ${usersErr ? `<br><span class="muted" style="font-size:12.5px;">(${esc(usersErr)})</span>` : ''}</div>`;
+    return;
+  }
+
+  const q = userSearch.trim().toLowerCase();
+  let rows = userRows;
+  if (userFilter === 'blocked') rows = rows.filter(isBlocked);
+  else if (userFilter === 'active') rows = rows.filter(u => !isBlocked(u));
+  if (q) rows = rows.filter(u =>
+    String(u.email || '').toLowerCase().includes(q) ||
+    userName(u).toLowerCase().includes(q) ||
+    String(u.username || '').toLowerCase().includes(q));
+
+  const blocked = userRows.filter(isBlocked).length;
+  const underage = userRows.filter(u => { const a = userDob(u).age; return a != null && a < 21; }).length;
+
+  $('panel').innerHTML = `
+    <div class="controls" style="align-items:center;">
+      <input type="search" id="users-q" placeholder="Search by email, name, or username\u2026" value="${esc(userSearch)}"
+        oninput="userSearch=this.value; renderUsers(); refocusSearch('users-q');">
+      <select style="width:auto;" onchange="userFilter=this.value; renderUsers();">
+        <option value="all" ${userFilter==='all'?'selected':''}>All accounts</option>
+        <option value="active" ${userFilter==='active'?'selected':''}>Active only</option>
+        <option value="blocked" ${userFilter==='blocked'?'selected':''}>Blocked only</option>
+      </select>
+    </div>
+    <p class="muted" style="font-size:13.5px;margin:-8px 0 16px;">
+      <b>${userRows.length}</b> registered ${userRows.length === 1 ? 'account' : 'accounts'}${blocked ? `, <b style="color:var(--danger)">${blocked} blocked</b>` : ''}${underage ? `, <b style="color:var(--terracotta)">${underage} under 21</b>` : ''}.
+      Blocking keeps the account and its reviews but stops the member signing in. Deleting removes everything.</p>` +
+    (rows.length ? '' : `<div class="empty">${userRows.length ? 'No accounts match that search.' : 'No registered accounts yet.'}</div>`) +
+    rows.map(u => {
+      const dob = userDob(u);
+      const self = currentUser && u.id === currentUser.id;
+      const off = isBlocked(u);
+      const young = dob.age != null && dob.age < 21;
+      return `
+      <div class="rev-card" style="${off ? 'border-color: rgba(163,58,37,0.45);' : ''}">
+        <div class="rev-head">
+          <h3>${esc(userName(u))}</h3>
+          <span class="pill ${off ? 'down' : 'live'}">${off ? 'Blocked' : 'Active'}</span>
+          ${self ? '<span class="pill pending">You</span>' : ''}
+          ${young ? '<span class="pill down">Under 21</span>' : ''}
+          ${u.username ? `<span class="sub">@${esc(u.username)}</span>` : ''}
+        </div>
+        <p style="font-size:14px;margin:0 0 6px;"><b>${esc(u.email || 'No email on file')}</b></p>
+        <p class="muted" style="font-size:13px;margin:0 0 10px;">
+          Date of birth: <b>${esc(dob.text)}</b>${dob.age != null ? ` (age ${dob.age})` : ''}
+          \u00b7 Joined ${esc(userDate(u.created_at))}
+          \u00b7 Last sign-in ${esc(userDate(u.last_sign_in_at))}</p>
+        <div class="acts">
+          <button class="btn ghost sm" ${self ? 'disabled style="opacity:.45;cursor:not-allowed;"' : ''}
+            onclick="toggleUserBlock('${esc(u.id)}')">${off ? 'Unblock' : 'Block'}</button>
+          <button class="btn danger sm" ${self ? 'disabled style="opacity:.45;cursor:not-allowed;"' : ''}
+            onclick="deleteUser('${esc(u.id)}')">Delete account</button>
+        </div>
+        ${self ? '<p class="muted" style="font-size:12.5px;margin:8px 0 0;">This is the account you\u2019re signed in with \u2014 blocking and deleting are disabled so you can\u2019t lock yourself out.</p>' : ''}
+        <div id="user-msg-${esc(u.id)}" class="form-msg"></div>
+      </div>`;
+    }).join('');
+}
+
+async function toggleUserBlock(id){
+  const u = userRows.find(x => x.id === id); if (!u) return;
+  const off = isBlocked(u);
+  if (!off && !confirm(`Block ${u.email || userName(u)}? They\u2019ll be signed out and won\u2019t be able to log in again until you unblock them. Their reviews and bar stay put.`)) return;
+  const box = $('user-msg-' + id);
+  const { error } = await db.rpc('admin_set_user_blocked', { p_user_id: id, p_blocked: !off });
+  if (error) { if (box) msg(box, error.message, 'err'); return; }
+  u.banned_until = off ? null : new Date(Date.now() + 3.15e12).toISOString();
+  renderCounts(); renderUsers();
+}
+
+async function deleteUser(id){
+  const u = userRows.find(x => x.id === id); if (!u) return;
+  const label = u.email || userName(u);
+  if (!confirm(`Delete ${label} permanently? This removes the account and every review, bar entry, price, and profile attached to it. This can\u2019t be undone.`)) return;
+  /* Deliberately heavier than the other deletes on this page: nothing here is
+     recoverable, so the email has to be typed out. */
+  const typed = prompt(`To confirm, type the account\u2019s email exactly:\n\n${label}`);
+  if (typed == null) return;
+  if (typed.trim().toLowerCase() !== String(label).trim().toLowerCase()) { alert('That didn\u2019t match \u2014 nothing was deleted.'); return; }
+  const box = $('user-msg-' + id);
+  if (box) msg(box, 'Deleting\u2026', 'ok');
+  const { error } = await db.rpc('admin_delete_user', { p_user_id: id });
+  if (error) { if (box) msg(box, error.message, 'err'); return; }
+  userRows = userRows.filter(x => x.id !== id);
+  renderCounts(); renderUsers();
+}
+
+/* ---------- unanswered questions ---------- */
+function renderUnanswered(){
+  $('panel').innerHTML =
+    (unanswered.length ? `
+    <div class="controls" style="justify-content:space-between; align-items:center;">
+      <p class="muted" style="font-size:13.5px;">Questions where Aidan had to give his generic fallback. Turn the good ones into answers — the rest can be dismissed.</p>
+      <button class="btn danger sm" onclick="clearUnanswered()">Dismiss all</button>
+    </div>` : '<div class="empty">Nothing here — Aidan has had an answer for everything lately. 🥃</div>') +
+    unanswered.map(u => `
+    <div class="shelf-row">
+      <div class="info">
+        <b>\u201C${esc(u.question)}\u201D</b>
+        <small>${esc(namesById[u.user_id] || 'a member')} · ${new Date(u.created_at).toLocaleDateString()}</small>
+      </div>
+      <button class="btn sm" onclick="draftAnswer(${u.id})">Write an answer</button>
+      <button class="btn ghost sm" onclick="dismissUnanswered(${u.id})">Dismiss</button>
+    </div>`).join('');
+}
+function draftAnswer(id){
+  const u = unanswered.find(x => x.id === id);
+  faqDraft = u ? { id: u.id, question: u.question, src: 'unanswered' } : null;
+  setTab('faq');
+}
+async function dismissUnanswered(id){
+  const { error } = await db.from('aidan_unanswered').delete().eq('id', id);
+  if (error) return alert(error.message);
+  unanswered = unanswered.filter(u => u.id !== id);
+  renderCounts(); renderUnanswered();
+}
+async function clearUnanswered(){
+  if (!confirm('Dismiss all ' + unanswered.length + ' unanswered questions?')) return;
+  for (const u of unanswered) await db.from('aidan_unanswered').delete().eq('id', u.id);
+  unanswered = [];
+  renderCounts(); renderUnanswered();
+}
+
+async function addFaq(){
+  const box = $('new-faq-msg');
+  const keywords = $('new-keys').value.trim(), answer = $('new-answer').value.trim();
+  if (!keywords || !answer) return msg(box, 'Both keywords and an answer are required.', 'err');
+  const L = faqLinks['new'] || { bottles: [], cocktails: [] };
+  const { data, error } = await db.from('aidan_faq').insert({ keywords, answer, active: true, bottle_ids: L.bottles, cocktail_slugs: L.cocktails }).select().single();
+  if (error) return msg(box, error.message, 'err');
+  faqRows.push(data);
+  faqLinks[data.id] = { bottles: (data.bottle_ids || []).slice(), cocktails: (data.cocktail_slugs || []).slice() };
+  faqLinks['new'] = { bottles: [], cocktails: [] };
+  if (faqDraft) {
+    if (faqDraft.src === 'feedback') {
+      await db.from('aidan_feedback').delete().eq('id', faqDraft.id);
+      feedback = feedback.filter(f => f.id !== faqDraft.id);
+    } else {
+      await db.from('aidan_unanswered').delete().eq('id', faqDraft.id);
+      unanswered = unanswered.filter(u => u.id !== faqDraft.id);
+    }
+    faqDraft = null;
+  }
+  renderCounts(); renderFaq();
+}
+async function saveFaq(id){
+  const box = $('qm' + id);
+  const L = faqLinks[id] || { bottles: [], cocktails: [] };
+  const payload = { keywords: $(`q${id}-keys`).value.trim(), answer: $(`q${id}-answer`).value.trim(), active: $(`q${id}-active`).checked,
+    bottle_ids: L.bottles, cocktail_slugs: L.cocktails };
+  if (!payload.keywords || !payload.answer) return msg(box, 'Both keywords and an answer are required.', 'err');
+  const { error } = await db.from('aidan_faq').update(payload).eq('id', id);
+  if (error) return msg(box, error.message, 'err');
+  Object.assign(faqRows.find(r => r.id === id), payload);
+  msg(box, 'Saved — Aidan uses it immediately.', 'ok');
+  setTimeout(renderFaq, 700);
+}
+async function deleteFaq(id){
+  if (!confirm('Delete this answer?')) return;
+  const { error } = await db.from('aidan_faq').delete().eq('id', id);
+  if (error) return alert(error.message);
+  faqRows = faqRows.filter(r => r.id !== id);
+  renderCounts(); renderFaq();
+}
+
+/* ---------- member reviews moderation ---------- */
+function reviewerAvatar(uid, s){
+  const p = memberProfilesById[uid];
+  if (p && p.avatar_url) return `<img class="mod-ava" style="width:${s}px;height:${s}px;" src="${esc(p.avatar_url)}" alt="">`;
+  const i = Math.max(10, Math.round(s * 0.6));
+  return `<span class="mod-ava mod-ava-fallback" style="width:${s}px;height:${s}px;" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="${i}" height="${i}" fill="currentColor" focusable="false">
+      <path d="M12 12.2c2.68 0 4.85-2.24 4.85-5S14.68 2.2 12 2.2 7.15 4.44 7.15 7.2s2.17 5 4.85 5zm0 2.3c-3.24 0-9.7 1.67-9.7 5v2.3h19.4v-2.3c0-3.33-6.46-5-9.7-5z"/>
+    </svg></span>`;
+}
+function reviewerLabel(uid){
+  const p = memberProfilesById[uid];
+  if (p && (p.display_name || p.username)) return (p.display_name || p.username) + (p.is_private ? ' (private)' : '');
+  return namesById[uid] || 'Member';
+}
+function reviewItemName(r){
+  if (r.item_type === 'bottle') {
+    const b = allBottles.find(x => x.id === r.item_id);
+    return b ? b.name : `bottle #${r.item_id}`;
+  }
+  const c = cocktailsRows.find(x => x.id === r.item_id);
+  return c ? c.name : `cocktail #${r.item_id}`;
+}
+function starsTxt(n){ return '\u2605'.repeat(Math.max(0, Math.min(5, +n || 0))) + '\u2606'.repeat(5 - Math.max(0, Math.min(5, +n || 0))); }
+function renderReviews(){
+  const q = reviewSearch.trim().toLowerCase();
+  let rows = reviewRows;
+  if (q) rows = rows.filter(r =>
+    reviewItemName(r).toLowerCase().includes(q) ||
+    reviewerLabel(r.user_id).toLowerCase().includes(q) ||
+    (r.note || '').toLowerCase().includes(q));
+  $('panel').innerHTML = `
+    <div class="controls">
+      <input type="search" id="reviews-q" placeholder="Search reviews by bottle, member, or note text\u2026" value="${esc(reviewSearch)}"
+        oninput="reviewSearch=this.value; renderReviews(); refocusSearch('reviews-q');">
+    </div>
+    ${!rows.length ? `<div class="empty">${q ? 'No reviews match that search.' : 'No member reviews yet.'}</div>` : rows.map(r => {
+      const when = r.created_at ? new Date(r.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+      const photos = Array.isArray(r.photos) && r.photos.length ? `
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin:10px 0 4px;">
+          ${r.photos.map((u, i) => `
+            <div style="text-align:center;">
+              <a href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" style="width:84px;height:84px;object-fit:cover;border-radius:8px;border:1px solid var(--card-line);display:block;"></a>
+              <button class="btn danger sm" style="margin-top:6px;padding:5px 10px;font-size:12px;" onclick="adminRemovePhoto(${r.id}, ${i})">Remove photo</button>
+            </div>`).join('')}
+        </div>` : '';
+      return `
+      <div class="rev-card">
+        <div class="rev-head">
+          <h3>${esc(reviewItemName(r))}</h3>
+          <span class="pill ${r.item_type === 'bottle' ? 'live' : 'pending'}">${r.item_type}</span>
+          <span class="sub" style="display:inline-flex;align-items:center;gap:7px;">${starsTxt(r.stars)} \u00b7 by ${reviewerAvatar(r.user_id, 24)} <b>${esc(reviewerLabel(r.user_id))}</b> \u00b7 ${when}</span>
+        </div>
+        ${r.note && r.note.trim() ? `<p style="font-size:14px;margin:0 0 6px;">\u201c${esc(r.note)}\u201d</p>` : `<p class="muted" style="font-size:13px;margin:0 0 6px;">Stars only \u2014 no written note.</p>`}
+        ${photos}
+        <div class="acts">
+          <button class="btn danger sm" onclick="adminDeleteReview(${r.id})">Delete review</button>
+        </div>
+        <div id="rv-msg-${r.id}" class="form-msg"></div>
+      </div>`;
+    }).join('')}`;
+}
+function ratingPhotoPath(u){ const p = String(u).split('/rating-photos/')[1]; return p ? decodeURIComponent(p) : null; }
+async function adminRemovePhoto(id, idx){
+  const r = reviewRows.find(x => x.id === id);
+  if (!r || !Array.isArray(r.photos) || r.photos[idx] == null) return;
+  if (!confirm('Remove this photo from the review? The image file is deleted too.')) return;
+  const url = r.photos[idx];
+  const next = r.photos.filter((_, i) => i !== idx);
+  const { error } = await db.from('item_ratings').update({ photos: next }).eq('id', id);
+  const box = $('rv-msg-' + id);
+  if (error) { if (box) msg(box, error.message + ' \u2014 has community-setup.sql been run?', 'err'); return; }
+  r.photos = next;
+  try { const p = ratingPhotoPath(url); if (p) await db.storage.from('rating-photos').remove([p]); } catch (_) {}
+  renderReviews();
+}
+async function adminDeleteReview(id){
+  const r = reviewRows.find(x => x.id === id);
+  if (!r) return;
+  if (!confirm(`Delete this review of ${reviewItemName(r)} by ${reviewerLabel(r.user_id)}? Stars, note, and photos are all removed. This can't be undone.`)) return;
+  const { error } = await db.from('item_ratings').delete().eq('id', id);
+  const box = $('rv-msg-' + id);
+  if (error) { if (box) msg(box, error.message + ' \u2014 has community-setup.sql been run?', 'err'); return; }
+  if (Array.isArray(r.photos) && r.photos.length) {
+    try { const paths = r.photos.map(ratingPhotoPath).filter(Boolean); if (paths.length) await db.storage.from('rating-photos').remove(paths); } catch (_) {}
+  }
+  reviewRows = reviewRows.filter(x => x.id !== id);
+  renderCounts(); renderReviews();
+}
+</script>
+</body>
+</html>

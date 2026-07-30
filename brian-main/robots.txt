@@ -1,0 +1,18 @@
+# Wandering Casks — robots.txt
+# Public pages are open to search engines. Account and admin pages are not.
+
+User-agent: *
+Allow: /
+
+Disallow: /admin
+Disallow: /api/
+Disallow: /account
+Disallow: /mybar
+Disallow: /mybar2
+Disallow: /login
+Disallow: /signup
+Disallow: /reset
+Disallow: /member/
+Disallow: /store/
+
+Sitemap: https://wanderingcasks.com/sitemap.xml

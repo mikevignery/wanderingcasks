@@ -1,0 +1,21 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/sitemap.xml", "destination": "/api/sitemap" },
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/admin/(.*)", "destination": "/admin.html" },
+    {
+      "source": "/:path((?!api/).*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(Googlebot|Googlebot-Image|Googlebot-News|Google-InspectionTool|Storebot-Google|Google-Extended|AdsBot-Google|APIs-Google|Mediapartners-Google|bingbot|BingPreview|Slurp|DuckDuckBot|Baiduspider|YandexBot|Yandex|Sogou|Exabot|facebookexternalhit|facebookcatalog|Facebot|Twitterbot|LinkedInBot|Pinterest|Pinterestbot|redditbot|Slackbot|Slack-ImgProxy|TelegramBot|WhatsApp|Discordbot|SkypeUriPreview|Embedly|Iframely|vkShare|Applebot|GPTBot|OAI-SearchBot|ChatGPT-User|ClaudeBot|Claude-Web|anthropic-ai|PerplexityBot|Perplexity-User|Amazonbot|Bytespider|CCBot|cohere-ai|Diffbot|Meta-ExternalAgent|Meta-ExternalFetcher|YouBot|ImagesiftBot).*"
+        }
+      ],
+      "destination": "/api/render?path=:path"
+    },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ]
+}
