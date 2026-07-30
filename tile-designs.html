@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wandering Casks — Tile Design Explorations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#f7f2ea; --card:#ffffff; --card-line:#e3dccc; --ink:#1a1a1a;
+    --sub:#555; --faint:#888; --terracotta:#c1531f; --link:#a5672f; --radius:12px;
+    /* warm whiskey tones used only for photo stand-ins */
+    --amber1:#d99a4e; --amber2:#a8611f; --amber-deep:#6f3d12;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--cream);color:var(--ink);
+    font-family:'DM Sans',system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3{font-family:'Fraunces',serif;margin:0;color:var(--ink);}
+  a{color:var(--link);text-decoration:none;}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 22px;}
+
+  /* ---- intro ---- */
+  .masthead{padding:56px 0 30px;border-bottom:1px solid var(--card-line);}
+  .eyebrow{font:700 11px 'DM Sans';letter-spacing:.16em;text-transform:uppercase;color:var(--terracotta);}
+  .masthead h1{font-size:clamp(30px,5vw,46px);line-height:1.05;margin:10px 0 14px;letter-spacing:-.01em;}
+  .masthead p{max-width:640px;color:var(--sub);font-size:16px;margin:0;}
+  .note{background:#fff;border:1px solid var(--card-line);border-left:3px solid var(--terracotta);
+    border-radius:var(--radius);padding:14px 18px;margin:24px 0 0;max-width:720px;font-size:14px;color:var(--sub);}
+  .note b{color:var(--ink);}
+
+  section.block{padding:46px 0 10px;}
+  .block-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+  .block-head h2{font-size:26px;}
+  .block-head .sub{color:var(--faint);font-size:14px;}
+  .divider{height:1px;background:var(--card-line);margin:34px 0;}
+
+  /* variant heading */
+  .variant{margin:34px 0 0;}
+  .variant-tag{display:inline-flex;align-items:center;gap:9px;margin-bottom:14px;}
+  .variant-tag .vnum{font:700 12px 'DM Sans';background:var(--ink);color:var(--cream);
+    width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex:none;}
+  .variant-tag h3{font-size:19px;}
+  .variant-tag .vwhy{color:var(--faint);font-size:13.5px;}
+  .variant-note{color:var(--sub);font-size:13.5px;max-width:660px;margin:0 0 16px;}
+
+  .demo-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;}
+
+  /* baseline "current" chip */
+  .current-badge{display:inline-block;font:700 10.5px 'DM Sans';letter-spacing:.05em;text-transform:uppercase;
+    color:var(--faint);border:1px dashed var(--card-line);border-radius:20px;padding:3px 10px;margin-bottom:14px;}
+
+  /* ============ shared tile atoms ============ */
+  .cat-eyebrow{font:700 10.5px 'DM Sans';letter-spacing:.05em;text-transform:uppercase;color:var(--link);}
+  .stars{color:var(--terracotta);letter-spacing:1px;font-size:13px;}
+  .stars .off{color:#d9cfbb;}
+  .chip{display:inline-block;font:700 11px 'DM Sans';border-radius:20px;padding:3px 10px;}
+  .chip-avail{background:#e7efe4;color:#3f6b46;}
+  .chip-tier{background:#f0e6d8;color:#8a5a24;}
+  .chip-flex{background:#eae3f3;color:#6a4c93;}
+
+  /* photo stand-ins (real photos drop into these frames) */
+  .ph{position:relative;display:flex;align-items:center;justify-content:center;text-align:center;
+    color:#fff;font-family:'Fraunces',serif;font-weight:600;overflow:hidden;}
+  .ph.amber{background:linear-gradient(150deg,var(--amber1),var(--amber2) 60%,var(--amber-deep));}
+  .ph .ph-name{position:relative;z-index:2;padding:14px;font-size:15px;text-shadow:0 1px 8px rgba(0,0,0,.28);}
+  .ph .ph-tag{position:absolute;top:9px;left:9px;z-index:2;font:700 9.5px 'DM Sans';letter-spacing:.08em;
+    text-transform:uppercase;background:rgba(255,255,255,.9);color:var(--ink);padding:3px 8px;border-radius:20px;}
+  .ph.striped{background:repeating-linear-gradient(135deg,#f1eadd,#f1eadd 12px,#ece3d2 12px,#ece3d2 24px);
+    background-color:#f4eee2;color:#a89b82;border:1px dashed #d9cfbb;}
+  .ph.striped .ph-name{color:#8a7d63;text-shadow:none;font-weight:600;}
+
+  /* ---------- BOTTLE V1: Portrait Shelf ---------- */
+  .b1{background:var(--card);border:1px solid var(--card-line);border-radius:var(--radius);overflow:hidden;
+    display:flex;flex-direction:column;transition:transform .15s,box-shadow .15s;cursor:pointer;}
+  .b1:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(26,26,26,.10);}
+  .b1 .ph{aspect-ratio:4/5;width:100%;}
+  .b1 .body{padding:15px 16px 16px;display:flex;flex-direction:column;gap:7px;}
+  .b1 .name{font:700 18px 'DM Sans';line-height:1.2;}
+  .b1 .short{color:var(--sub);font-size:13px;margin:0;}
+  .b1 .foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px;}
+
+  /* ---------- BOTTLE V2: Spec Plate ---------- */
+  .b2{background:var(--card);border:1px solid var(--card-line);border-radius:var(--radius);padding:16px;
+    display:flex;gap:15px;transition:box-shadow .15s;cursor:pointer;}
+  .b2:hover{box-shadow:0 10px 26px rgba(26,26,26,.09);}
+  .b2 .ph{width:88px;flex:none;aspect-ratio:3/4;border-radius:9px;}
+  .b2 .ph .ph-name{font-size:12px;padding:8px;}
+  .b2 .col{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;}
+  .b2 .name{font:700 17px 'DM Sans';line-height:1.2;}
+  .b2 .specs{display:grid;grid-template-columns:1fr 1fr;gap:9px 12px;margin-top:2px;}
+  .b2 .spec .k{font:700 9px 'DM Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .b2 .spec .v{font:600 12.5px 'DM Sans';color:var(--ink);}
+
+  /* ---------- BOTTLE V3: Editorial Quiet ---------- */
+  .b3{background:#fbf8f2;border:none;border-top:2px solid var(--terracotta);border-radius:0 0 var(--radius) var(--radius);
+    padding:18px 18px 20px;display:flex;flex-direction:column;gap:9px;cursor:pointer;
+    box-shadow:0 1px 0 var(--card-line),0 1px 0 var(--card-line);transition:background .15s;}
+  .b3:hover{background:#f7f2e8;}
+  .b3 .top{display:flex;align-items:center;gap:13px;}
+  .b3 .ph{width:46px;height:46px;border-radius:50%;flex:none;aspect-ratio:1;}
+  .b3 .ph .ph-name{font-size:0;}
+  .b3 .ph::after{content:attr(data-init);font:600 16px 'Fraunces';color:#fff;position:relative;z-index:2;}
+  .b3 .name{font:600 20px 'Fraunces';line-height:1.15;}
+  .b3 .short{color:var(--sub);font-size:13.5px;font-style:italic;margin:0;}
+  .b3 .foot{display:flex;align-items:center;gap:12px;color:var(--faint);font-size:12px;font-weight:600;}
+  .b3 .foot .dot{width:3px;height:3px;border-radius:50%;background:#cdbfa5;}
+
+  /* ---------- COCKTAIL V1: Recipe Card ---------- */
+  .c1{background:var(--card);border:1px solid var(--card-line);border-radius:var(--radius);overflow:hidden;
+    display:flex;flex-direction:column;transition:transform .15s,box-shadow .15s;cursor:pointer;}
+  .c1:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(26,26,26,.10);}
+  .c1 .ph{aspect-ratio:4/3;width:100%;}
+  .c1 .body{padding:15px 16px 16px;display:flex;flex-direction:column;gap:10px;}
+  .c1 .name{font:700 21px 'Fraunces';line-height:1.15;}
+  .c1 .ings{display:flex;flex-wrap:wrap;gap:6px;}
+  .c1 .ing{font:600 11.5px 'DM Sans';background:#f3ecde;color:#6a5a3c;border-radius:20px;padding:4px 10px;}
+  .c1 .cta{align-self:flex-start;font:700 12px 'DM Sans';color:var(--terracotta);margin-top:2px;}
+
+  /* ---------- COCKTAIL V2: Hero Pour ---------- */
+  .c2{background:var(--card);border:1px solid var(--card-line);border-radius:var(--radius);overflow:hidden;
+    display:flex;flex-direction:column;transition:transform .15s,box-shadow .15s;cursor:pointer;}
+  .c2:hover{transform:translateY(-3px);box-shadow:0 14px 32px rgba(26,26,26,.12);}
+  .c2 .hero{position:relative;aspect-ratio:16/10;width:100%;}
+  .c2 .hero .ph{position:absolute;inset:0;}
+  .c2 .hero .scrim{position:absolute;inset:0;z-index:3;
+    background:linear-gradient(to top,rgba(20,12,4,.78),rgba(20,12,4,.05) 55%);}
+  .c2 .hero .name{position:absolute;left:16px;bottom:13px;z-index:4;color:#fff;
+    font:700 23px 'Fraunces';text-shadow:0 1px 10px rgba(0,0,0,.4);}
+  .c2 .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:9px;}
+  .c2 .desc{color:var(--sub);font-size:13px;margin:0;}
+  .c2 .foot{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .c2 .view{font:700 12px 'DM Sans';color:var(--terracotta);}
+
+  /* ---------- COCKTAIL V3: Menu Line ---------- */
+  .c3{background:var(--card);border:1px solid var(--card-line);border-radius:var(--radius);padding:13px 15px;
+    display:flex;align-items:center;gap:14px;transition:background .15s;cursor:pointer;}
+  .c3:hover{background:#fbf7ef;}
+  .c3 .ph{width:52px;height:52px;flex:none;border-radius:9px;aspect-ratio:1;}
+  .c3 .ph .ph-name{font-size:0;}
+  .c3 .col{flex:1;min-width:0;}
+  .c3 .name{font:700 17px 'Fraunces';line-height:1.15;}
+  .c3 .ings{color:var(--faint);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .c3 .right{display:flex;align-items:center;gap:10px;flex:none;}
+  .c3 .chev{color:#c3b69c;font-size:20px;}
+
+  /* recommendations */
+  .recos{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:20px;}
+  .reco{background:#fff;border:1px solid var(--card-line);border-radius:var(--radius);padding:18px;}
+  .reco h4{font:700 15px 'DM Sans';margin:0 0 6px;color:var(--ink);}
+  .reco p{margin:0;color:var(--sub);font-size:13.5px;}
+  .reco .k{font:700 10.5px 'DM Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--terracotta);}
+
+  footer.pg{border-top:1px solid var(--card-line);margin-top:50px;padding:30px 0 60px;color:var(--faint);font-size:13px;}
+
+  @media(max-width:560px){
+    .b2{flex-direction:row;}
+    .masthead{padding:40px 0 24px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- INTRO -->
+  <header class="masthead">
+    <span class="eyebrow">Design exploration · for review</span>
+    <h1>Fresh looks for the bottle &amp; cocktail tiles</h1>
+    <p>The current tiles work, but they’re starting to feel a little flat — a small photo beside a
+      block of text, the same shape for everything. Below are three directions each for bottles and
+      cocktails, all built in our real brand (the cream, the Fraunces headlines, the terracotta accent),
+      so they’d drop straight into the site. Same ingredients, different plating.</p>
+    <div class="note">
+      <b>About the images:</b> the warm amber frames are stand-ins showing where real bottle and
+      cocktail photos go. A couple of tiles also show our current “no photo yet” striped placeholder,
+      so you can see how each layout holds up before every item has a picture. Hover any tile to feel it.
+    </div>
+  </header>
+
+  <!-- ================= BOTTLES ================= -->
+  <section class="block">
+    <div class="block-head">
+      <h2>Bottle tiles</h2>
+      <span class="sub">Discover page · three directions</span>
+    </div>
+
+    <!-- current -->
+    <div class="variant">
+      <span class="current-badge">What we have now</span>
+      <div class="demo-row">
+        <div style="background:#fff;border:1px solid var(--card-line);border-radius:var(--radius);padding:18px;max-width:320px;">
+          <div style="display:flex;gap:12px;align-items:flex-start;">
+            <div class="ph striped" style="width:56px;height:56px;border-radius:10px;"><span class="ph-name" style="font-size:9px;">Buffalo Trace</span></div>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <span class="cat-eyebrow">Bourbon</span>
+              <span style="font:700 17px 'DM Sans';line-height:1.25;">Buffalo Trace</span>
+            </div>
+          </div>
+          <p style="color:var(--sub);font-size:13px;margin:12px 0;">The everyday benchmark bourbon — caramel, brown sugar, a little spice.</p>
+          <div style="display:flex;gap:6px;margin-bottom:10px;"><span class="chip chip-avail">Shelf Staple</span><span class="chip chip-tier">core</span></div>
+          <span class="stars">★★★★<span class="off">★</span></span>
+          <div style="margin-top:10px;"><a style="font:700 12px 'DM Sans';color:var(--terracotta);">Learn more →</a></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- V1 -->
+    <div class="variant">
+      <div class="variant-tag"><span class="vnum">1</span><h3>Portrait Shelf</h3><span class="vwhy">photo-forward</span></div>
+      <p class="variant-note">Leads with a tall bottle photo, the way a good bottle shop displays the real thing.
+        The picture does the selling; text steps back to a clean name, one line, and the essentials along the bottom.
+        Best once most bottles have photos.</p>
+      <div class="demo-row">
+        <!-- with photo -->
+        <div class="b1">
+          <div class="ph amber"><span class="ph-tag">Bourbon</span><span class="ph-name">Buffalo Trace</span></div>
+          <div class="body">
+            <span class="name">Buffalo Trace</span>
+            <p class="short">The everyday benchmark bourbon — caramel, brown sugar, a little spice.</p>
+            <div class="foot"><span class="stars">★★★★<span class="off">★</span></span><span class="chip chip-avail">Shelf Staple</span></div>
+          </div>
+        </div>
+        <div class="b1">
+          <div class="ph amber" style="--amber1:#8a6a3a;--amber2:#4f3418;--amber-deep:#2e1e0d;"><span class="ph-tag">Scotch</span><span class="ph-name">Lagavulin 16</span></div>
+          <div class="body">
+            <span class="name">Lagavulin 16</span>
+            <p class="short">Big peat smoke wrapped around sea salt and dried fruit.</p>
+            <div class="foot"><span class="stars">★★★★★</span><span class="chip chip-tier">showcase</span></div>
+          </div>
+        </div>
+        <!-- no photo yet -->
+        <div class="b1">
+          <div class="ph striped"><span class="ph-name">Redbreast 12</span></div>
+          <div class="body">
+            <span class="name">Redbreast 12</span>
+            <p class="short">Rich single pot still — orchard fruit, toasted nuts, sherry warmth.</p>
+            <div class="foot"><span class="stars">★★★★<span class="off">★</span></span><span class="chip chip-avail">Easy to Find</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- V2 -->
+    <div class="variant">
+      <div class="variant-tag"><span class="vnum">2</span><h3>Spec Plate</h3><span class="vwhy">collector / data-forward</span></div>
+      <p class="variant-note">For the enthusiast who wants the facts at a glance. A trim vertical photo sits beside a
+        tidy spec grid — type, availability, tier, rating — like a collector’s catalog card. Reads as knowledgeable
+        and organized, and every bottle looks complete even without a photo.</p>
+      <div class="demo-row">
+        <div class="b2">
+          <div class="ph amber"><span class="ph-name">Buffalo Trace</span></div>
+          <div class="col">
+            <div><span class="cat-eyebrow">Bourbon</span><div class="name">Buffalo Trace</div></div>
+            <div class="specs">
+              <div class="spec"><div class="k">Availability</div><div class="v">Shelf Staple</div></div>
+              <div class="spec"><div class="k">Tier</div><div class="v">Core</div></div>
+              <div class="spec"><div class="k">Rating</div><div class="v">★ 4.2 · 18</div></div>
+              <div class="spec"><div class="k">Proof</div><div class="v">90</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="b2">
+          <div class="ph striped"><span class="ph-name">Lagavulin 16</span></div>
+          <div class="col">
+            <div><span class="cat-eyebrow">Scotch</span><div class="name">Lagavulin 16</div></div>
+            <div class="specs">
+              <div class="spec"><div class="k">Availability</div><div class="v">Premium</div></div>
+              <div class="spec"><div class="k">Tier</div><div class="v">Showcase</div></div>
+              <div class="spec"><div class="k">Rating</div><div class="v">★ 4.8 · 33</div></div>
+              <div class="spec"><div class="k">Proof</div><div class="v">86</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- V3 -->
+    <div class="variant">
+      <div class="variant-tag"><span class="vnum">3</span><h3>Editorial Quiet</h3><span class="vwhy">minimal / premium</span></div>
+      <p class="variant-note">The refined, restrained take. No hard box — just a terracotta hairline, a small round
+        photo token, and the name in our Fraunces serif with room to breathe. Availability and rating become quiet
+        text, not badges. Fewer facts, more feeling; leans upscale.</p>
+      <div class="demo-row">
+        <div class="b3">
+          <div class="top">
+            <div class="ph amber" data-init="B"><span class="ph-name"></span></div>
+            <div><span class="cat-eyebrow">Bourbon</span><div class="name">Buffalo Trace</div></div>
+          </div>
+          <p class="short">The everyday benchmark bourbon — caramel, brown sugar, a little spice.</p>
+          <div class="foot"><span class="stars" style="font-size:12px;">★★★★<span class="off">★</span></span><span class="dot"></span><span>Shelf Staple</span><span class="dot"></span><span>Core</span></div>
+        </div>
+        <div class="b3">
+          <div class="top">
+            <div class="ph amber" data-init="L" style="--amber1:#8a6a3a;--amber2:#4f3418;"><span class="ph-name"></span></div>
+            <div><span class="cat-eyebrow">Scotch</span><div class="name">Lagavulin 16</div></div>
+          </div>
+          <p class="short">Big peat smoke wrapped around sea salt and dried fruit.</p>
+          <div class="foot"><span class="stars" style="font-size:12px;">★★★★★</span><span class="dot"></span><span>Premium</span><span class="dot"></span><span>Showcase</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ================= COCKTAILS ================= -->
+  <section class="block">
+    <div class="block-head">
+      <h2>Cocktail tiles</h2>
+      <span class="sub">Cocktails page · three directions</span>
+    </div>
+
+    <!-- current -->
+    <div class="variant">
+      <span class="current-badge">What we have now</span>
+      <div class="demo-row">
+        <div style="background:#fff;border:1px solid var(--card-line);border-radius:var(--radius);padding:20px;max-width:340px;">
+          <div style="display:flex;gap:12px;align-items:flex-start;">
+            <div class="ph striped" style="width:56px;height:56px;border-radius:10px;"><span class="ph-name" style="font-size:9px;">Old Fashioned</span></div>
+            <span style="font:700 19px 'Fraunces';line-height:1.2;">Old Fashioned</span>
+          </div>
+          <p style="color:var(--sub);font-size:13px;margin:12px 0;">Whiskey, sugar, bitters, and time — the template every other drink is measured against.</p>
+          <div style="font:12px 'DM Sans';color:var(--faint);margin-bottom:6px;"><strong style="color:var(--ink);">Ingredients:</strong> Bourbon, Sugar, Angostura, Orange peel</div>
+          <div style="font:12px 'DM Sans';color:var(--faint);margin-bottom:12px;"><strong style="color:var(--ink);">Use:</strong> Buffalo Trace · Woodford Reserve</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;"><span style="font:700 11.5px 'DM Sans';background:#e7efe4;color:#3f6b46;padding:4px 10px;border-radius:20px;">See Bourbon bottles →</span><span style="font:700 11.5px 'DM Sans';background:#fff;border:1px solid var(--card-line);padding:4px 10px;border-radius:20px;">View cocktail</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- V1 -->
+    <div class="variant">
+      <div class="variant-tag"><span class="vnum">1</span><h3>Recipe Card</h3><span class="vwhy">scannable</span></div>
+      <p class="variant-note">Turns the comma-separated ingredient line into little tappable chips, the way a modern
+        recipe app does. Instantly readable — you can see what’s in a drink without reading a sentence — and a single
+        clear “View recipe” action instead of three competing buttons.</p>
+      <div class="demo-row">
+        <div class="c1">
+          <div class="ph amber"><span class="ph-name">Old Fashioned</span></div>
+          <div class="body">
+            <span class="name">Old Fashioned</span>
+            <div class="ings"><span class="ing">Bourbon</span><span class="ing">Sugar</span><span class="ing">Angostura</span><span class="ing">Orange peel</span></div>
+            <span class="cta">View recipe →</span>
+          </div>
+        </div>
+        <div class="c1">
+          <div class="ph amber" style="--amber1:#e0b15a;--amber2:#c07d2a;"><span class="ph-name">Whiskey Sour</span></div>
+          <div class="body">
+            <span class="name">Whiskey Sour</span>
+            <div class="ings"><span class="ing">Bourbon</span><span class="ing">Lemon</span><span class="ing">Simple syrup</span><span class="ing">Egg white</span></div>
+            <span class="cta">View recipe →</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- V2 -->
+    <div class="variant">
+      <div class="variant-tag"><span class="vnum">2</span><h3>Hero Pour</h3><span class="vwhy">appetizing / bold</span></div>
+      <p class="variant-note">The most visual option — a big cocktail photo fills the top with the name laid over it,
+        like a cocktail menu you actually want to order from. Details sit calmly underneath. This one lives or dies on
+        good drink photography, but when it has it, it’s gorgeous.</p>
+      <div class="demo-row">
+        <div class="c2">
+          <div class="hero"><div class="ph amber"></div><div class="scrim"></div><span class="name">Boulevardier</span></div>
+          <div class="body">
+            <p class="desc">The Negroni’s whiskey cousin — bitter, boozy, and sophisticated.</p>
+            <div class="foot"><span class="stars">★★★★<span class="off">★</span></span><span class="view">View cocktail →</span></div>
+          </div>
+        </div>
+        <div class="c2">
+          <div class="hero"><div class="ph amber" style="--amber1:#c98a3e;--amber2:#7d4a18;"></div><div class="scrim"></div><span class="name">Old Fashioned</span></div>
+          <div class="body">
+            <p class="desc">Whiskey, sugar, bitters, and time — the original.</p>
+            <div class="foot"><span class="stars">★★★★★</span><span class="view">View cocktail →</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- V3 -->
+    <div class="variant">
+      <div class="variant-tag"><span class="vnum">3</span><h3>Menu Line</h3><span class="vwhy">compact / efficient</span></div>
+      <p class="variant-note">A tight single-row format for people who want to scan a lot of drinks quickly, like
+        reading a bar’s cocktail menu. Small photo, name, a one-line ingredient summary, rating, and a chevron.
+        Fits far more per screen — great as an optional “list view” toggle alongside the cards.</p>
+      <div class="demo-row" style="grid-template-columns:1fr;max-width:560px;">
+        <div class="c3">
+          <div class="ph amber"><span class="ph-name"></span></div>
+          <div class="col"><div class="name">Old Fashioned</div><div class="ings">Bourbon · Sugar · Angostura · Orange peel</div></div>
+          <div class="right"><span class="stars" style="font-size:12px;">★★★★★</span><span class="chev">›</span></div>
+        </div>
+        <div class="c3">
+          <div class="ph amber" style="--amber1:#e0b15a;--amber2:#c07d2a;"><span class="ph-name"></span></div>
+          <div class="col"><div class="name">Whiskey Sour</div><div class="ings">Bourbon · Lemon · Simple syrup · Egg white</div></div>
+          <div class="right"><span class="stars" style="font-size:12px;">★★★★<span class="off">★</span></span><span class="chev">›</span></div>
+        </div>
+        <div class="c3">
+          <div class="ph amber" style="--amber1:#b9793a;--amber2:#6f3f16;"><span class="ph-name"></span></div>
+          <div class="col"><div class="name">Boulevardier</div><div class="ings">Bourbon · Campari · Sweet vermouth</div></div>
+          <div class="right"><span class="stars" style="font-size:12px;">★★★★<span class="off">★</span></span><span class="chev">›</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- RECOMMENDATIONS -->
+  <section class="block">
+    <div class="block-head"><h2>A few look &amp; feel notes</h2><span class="sub">beyond the tiles</span></div>
+    <div class="recos">
+      <div class="reco"><span class="k">Photography</span><h4>Photos are the upgrade</h4>
+        <p>Every direction here gets dramatically better with real, consistent bottle and cocktail photos —
+          same angle, same warm light. It’s the single highest-impact change we can make.</p></div>
+      <div class="reco"><span class="k">Consistency</span><h4>Let bottles &amp; cocktails rhyme</h4>
+        <p>Right now they’re built a bit differently. Picking one card language for both — e.g. Portrait Shelf +
+          Recipe Card — makes the whole site feel designed rather than assembled.</p></div>
+      <div class="reco"><span class="k">Flexibility</span><h4>Offer a list view</h4>
+        <p>The compact “Menu Line” could be a toggle beside the cards, so browsers can flip between rich cards and a
+          fast scannable list — a small feature people love.</p></div>
+      <div class="reco"><span class="k">Hierarchy</span><h4>One action per tile</h4>
+        <p>The current cocktail tile has three buttons competing. Leading with a single clear action (and moving the
+          rest to the detail page) makes tiles calmer and clicks more confident.</p></div>
+      <div class="reco"><span class="k">Motion</span><h4>A gentle lift on hover</h4>
+        <p>The subtle raise-and-shadow you feel hovering these tiles adds a premium, tactile quality with almost no
+          performance cost. Worth keeping whichever direction we choose.</p></div>
+      <div class="reco"><span class="k">Warmth</span><h4>Lean into the amber</h4>
+        <p>The whiskey’s own color is our best untapped accent. Used lightly — a warm frame, a hover tint — it makes
+          the site feel unmistakably about whiskey.</p></div>
+    </div>
+  </section>
+
+  <footer class="pg">
+    Wandering Casks — internal design exploration. These tiles are mockups for feedback, built in the live brand
+    system so a chosen direction can go straight into the site. Reply with the numbers you like best (bottles &amp;
+    cocktails can be different), and we’ll build it out.
+  </footer>
+
+</div>
+</body>
+</html>
