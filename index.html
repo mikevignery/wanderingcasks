@@ -521,6 +521,13 @@ nav.main .wc-search input:focus { width: 230px; outline: 2px solid var(--terraco
 .img-slot.thumb { width: 56px; height: 56px; flex: none; border-radius: 10px; }
 .img-slot.modal-img { width: 100%; aspect-ratio: 4 / 3; }
 @media (max-width: 640px) { .img-slot.hero { aspect-ratio: 16 / 9; } }
+/* Cocktail "no photo yet" placeholder — gradient + emoji + caption */
+.img-slot.ph { padding: 0; border: 1px solid var(--card-line); background: none; }
+.cocktail-ph { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-radius: inherit; color: #fff; }
+.cocktail-ph-icon { font-size: 28px; line-height: 1; }
+.cocktail-ph-label { font: 700 8.5px 'DM Sans'; letter-spacing: .06em; text-transform: uppercase; color: rgba(255,255,255,.85); }
+.img-slot.thumb .cocktail-ph-icon { font-size: 20px; }
+.img-slot.thumb .cocktail-ph-label { display: none; }
 
 /* ---------- guide ---------- */
 .guide-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 16px 0 36px; }
@@ -594,6 +601,54 @@ nav.main .wc-search input:focus { width: 230px; outline: 2px solid var(--terraco
 .entry-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin: 26px 0 44px; }
 .entry-cards .card { padding: 22px; gap: 8px; }
 .entry-cards .card a.learn { margin-top: 4px; }
+/* ---------- home quick-filter ---------- */
+.quick-filter { background: var(--ink); border-radius: var(--radius); padding: 26px 28px 24px; margin: 8px 0 40px; }
+.quick-filter .qf-title { font: 700 18px 'Fraunces', serif; color: var(--cream); text-align: center; margin-bottom: 18px; }
+.qf-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end; }
+.qf-field { flex: 1 1 180px; display: flex; flex-direction: column; gap: 7px; }
+.qf-field label { font: 700 10.5px 'DM Sans'; letter-spacing: .08em; text-transform: uppercase; color: rgba(247,242,234,.55); }
+.qf-field select {
+  width: 100%; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.2); border-radius: 10px;
+  padding: 12px 14px; font: 700 14px 'DM Sans'; color: var(--cream); cursor: pointer;
+}
+.qf-field select:focus { outline: none; border-color: var(--terracotta); }
+.qf-field select option { color: var(--ink); }
+.qf-go { flex: 0 0 auto; }
+.qf-go .btn { white-space: nowrap; }
+@media (max-width: 620px) { .quick-filter { padding: 22px 18px; } .qf-go, .qf-go .btn { width: 100%; text-align: center; } }
+/* ---------- home: hover/tap-to-flip "start here" cocktail cards ---------- */
+.cocktail-flip-card { perspective: 1000px; height: 270px; cursor: pointer; }
+.cocktail-flip-inner { position: relative; width: 100%; height: 100%; transition: transform .6s ease; transform-style: preserve-3d; }
+.cocktail-flip-card:hover .cocktail-flip-inner,
+.cocktail-flip-card.flipped .cocktail-flip-inner,
+.cocktail-flip-card:focus-within .cocktail-flip-inner { transform: rotateY(180deg); }
+.cocktail-flip-front, .cocktail-flip-back {
+  position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  border-radius: var(--radius); padding: 18px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 8px; text-align: center;
+}
+.cocktail-flip-front { background: var(--card); border: 1px solid var(--card-line); }
+.cocktail-flip-back { background: var(--ink); border: 1.5px solid var(--terracotta); color: var(--cream); transform: rotateY(180deg); overflow: auto; }
+.flip-hint { font: 700 11px 'DM Sans'; color: var(--rust); margin-top: auto; }
+.flip-back-title { font: 700 15px 'Fraunces', serif; color: var(--cream); }
+.flip-ingredients { list-style: none; margin: 0; padding: 0; font-size: 11.5px; color: rgba(240,232,220,.85); text-align: left; line-height: 1.7; }
+.flip-ingredients li::before { content: "• "; color: var(--terracotta); }
+.img-slot.flip-photo { width: 100%; height: 88px; border-radius: 10px; flex: none; }
+/* ---------- home: interactive label inspector (Decode the Label) ---------- */
+.label-inspector { display: flex; gap: 20px; flex-wrap: wrap; background: var(--ink); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+.li-graphic {
+  width: 140px; flex: none; min-height: 150px; background: rgba(255,255,255,.05); border: 2px solid rgba(255,255,255,.15);
+  border-radius: 10px; padding: 16px 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px; text-align: center;
+}
+.li-zone { border: 1px dashed rgba(255,255,255,.3); border-radius: 6px; padding: 5px 8px; font: 700 8.5px 'DM Sans'; letter-spacing: .04em; color: rgba(240,232,220,.55); transition: all .2s ease; }
+.li-zone-title { font: 700 12px 'Fraunces', serif; color: rgba(240,232,220,.75); border: none; letter-spacing: normal; padding: 2px; }
+.li-zone.on { border-color: var(--terracotta); border-style: solid; color: var(--terracotta); background: rgba(193,83,31,.15); }
+.li-zone-title.on { color: var(--terracotta); }
+.li-desc { flex: 1; min-width: 200px; display: flex; flex-direction: column; justify-content: center; gap: 5px; }
+.li-desc h4 { font: 700 16px 'Fraunces', serif; color: var(--cream); margin: 0; }
+.li-desc p { font-size: 12.5px; line-height: 1.6; color: rgba(240,232,220,.8); margin: 0; }
+.li-term-btn { width: 100%; text-align: left; background: var(--card); border: 1px solid var(--card-line); cursor: pointer; font: inherit; transition: all .2s ease; }
+.li-term-btn:hover, .li-term-btn:focus-visible, .li-term-btn.active { border-color: var(--terracotta); outline: none; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,.08); }
 /* ---------- auth ---------- */
 .auth-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; align-items: center; padding: 30px 0 60px; }
 @media (max-width: 900px) { .auth-layout { grid-template-columns: 1fr; } }
@@ -3476,52 +3531,6 @@ function closeMenu(){
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeMenu(); });
 
 /* ---------- home ---------- */
-/* Live counters on the home hero — real numbers from the catalog + community.
-   They animate up on load, like the running tallies on bigger whiskey sites. */
-function wcHomeStats(){
-  const bottles = (typeof BOTTLES !== "undefined" ? BOTTLES.length : 0)
-                + (typeof COCKTAILS !== "undefined" ? COCKTAILS.length : 0);
-  const ratings = (ratingsRows || []).length;
-  const notes = (ratingsRows || []).filter(r => r.note && String(r.note).trim()).length;
-  return [
-    { n: bottles, label: "Bottles &amp; Cocktails" },
-    { n: ratings, label: "Member Ratings" },
-    { n: notes,   label: "Tasting Notes" }
-  ];
-}
-/* ============ HOME STAT COUNTERS — TURN ON / OFF ============
-   true  = show the animated Bottles / Ratings / Notes counters
-   false = hide them entirely (the hero just ends at the buttons)  */
-const FEATURE_HOME_STATS = true;
-/* ========================================================== */
-function wcStatBar(){
-  if (!FEATURE_HOME_STATS) return "";
-  const s = wcHomeStats();
-  return `<div class="wc-stats" id="wc-stats" role="group" aria-label="Site totals">
-    ${s.map(x => `<div class="wc-stat">
-      <span class="wc-stat-n" data-to="${x.n}">0</span>
-      <span class="wc-stat-l">${x.label}</span>
-    </div>`).join("")}
-  </div>`;
-}
-function wcRunStats(){
-  if (!FEATURE_HOME_STATS) return;
-  const els = document.querySelectorAll("#wc-stats .wc-stat-n");
-  if (!els.length) return;
-  els.forEach(el => {
-    const to = +el.getAttribute("data-to") || 0;
-    if (to <= 0) { el.textContent = "0"; return; }
-    const start = performance.now(), dur = 900; // fast count-up
-    const tick = now => {
-      const p = Math.min(1, (now - start) / dur);
-      const eased = 1 - Math.pow(1 - p, 3);
-      el.textContent = Math.round(to * eased).toLocaleString();
-      if (p < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  });
-}
-
 /* Front-page slideshow — edit names/URLs here, or add more slides */
 const HERO_SLIDES = [
   /* Slide 1: brand lockup. plain:true = no caption text, no gray scrim. */
@@ -3560,19 +3569,186 @@ function preloadCatalog(){
   loadRatings().then(() => { route(); });
   loadMemberProfiles().then(() => {});
 }
+/* ---------- home quick-filter: STYLE + BUDGET straight into Discover ---------- */
+let qfStyle = "all", qfBudget = "";
+const QF_BUDGETS = [
+  { id: "",      label: "Any price" },
+  { id: "10-30", label: "$10–30", min: 10, max: 30 },
+  { id: "30-45", label: "$30–45", min: 30, max: 45 },
+  { id: "45-65", label: "$45–65", min: 45, max: 65 },
+  { id: "65-85", label: "$65–85", min: 65, max: 85 },
+  { id: "85",    label: "$85+",        min: 85, max: Infinity }
+];
+function qfBottlePool(styleId){ return styleId === "all" ? BOTTLES : BOTTLES.filter(b => b.category === styleId); }
+function qfCount(styleId, band){
+  const pool = qfBottlePool(styleId);
+  if (!band || !band.min) return pool.length;
+  return pool.filter(b => { const p = priceLow(b); return p >= band.min && p < band.max; }).length;
+}
+function qfSetStyle(v){ qfStyle = v; renderHome(); }
+function qfSetBudget(v){ qfBudget = v; renderHome(); }
+function quickFilterBlock(){
+  const band = QF_BUDGETS.find(b => b.id === qfBudget);
+  const count = qfCount(qfStyle, band);
+  const href = (qfStyle === "all" ? "/discover" : "/discover/" + qfStyle) + (qfBudget ? "?budget=" + encodeURIComponent(qfBudget) : "");
+  return `
+    <div class="quick-filter">
+      <div class="qf-title">Skip the guide — jump to Discovery Hub</div>
+      <div class="qf-row">
+        <div class="qf-field">
+          <label for="qf-style">Style</label>
+          <select id="qf-style" onchange="qfSetStyle(this.value)">
+            ${CATEGORIES.map(c => `<option value="${c.id}"${c.id === qfStyle ? " selected" : ""}>${esc(c.label)}</option>`).join("")}
+          </select>
+        </div>
+        <div class="qf-field">
+          <label for="qf-budget">Budget</label>
+          <select id="qf-budget" onchange="qfSetBudget(this.value)">
+            ${QF_BUDGETS.map(b => `<option value="${b.id}"${b.id === qfBudget ? " selected" : ""}>${esc(b.label)} (${qfCount(qfStyle, b)})</option>`).join("")}
+          </select>
+        </div>
+        <div class="qf-go">
+          <a class="btn gift-cta" href="${href}">Show ${count} Bottle${count === 1 ? "" : "s"} →</a>
+        </div>
+      </div>
+    </div>`;
+}
+/* Real category counts — replaces the wireframe's flavor tiles, which relied
+   on a flavor taxonomy that doesn't exist anywhere in the data model. */
+function browseByCategoryBlock(){
+  const cats = CATEGORIES.filter(c => c.id !== "all");
+  return `
+    <h2 class="section-title">Browse by category</h2>
+    <p class="sub" style="font-size:13.5px;margin-top:-14px;margin-bottom:18px;">Every launch bottle, sorted by style.</p>
+    <section class="grid next" style="margin-bottom:40px;">
+      ${cats.map(c => {
+        const n = BOTTLES.filter(b => b.category === c.id).length;
+        const color = catColor(c.id);
+        return `
+        <a class="card" href="/discover/${c.id}" style="text-decoration:none;color:inherit;flex-direction:row;align-items:center;gap:12px;">
+          <div class="img-slot thumb bottle-glyph" style="background:${color.fill}14;border:1px solid ${color.fill}40">${bottleGlyph(color.fill)}</div>
+          <div style="display:flex;flex-direction:column;gap:2px;">
+            <span class="bottle-name">${esc(c.label)}</span>
+            <span class="sub" style="font-size:12.5px;">${n} bottle${n === 1 ? "" : "s"}</span>
+          </div>
+        </a>`;
+      }).join("")}
+    </section>`;
+}
+/* Decode the Label — same copy as the plain term cards, now also
+   index-addressable so the hover/tap label inspector (wcInspect) can swap
+   the description panel and highlight a matching spot on the bottle
+   graphic. zone: "badge" = proof/age, "stamp" = legal certification,
+   "title" = style/type descriptor. */
+const LABEL_TERMS = [
+  { term: "Proof", desc: "Strength, not quality. Divide by 2 for the actual alcohol percentage (100 proof = 50% ABV). Higher proof isn't automatically better — just more concentrated.", zone: "badge", group: "on" },
+  { term: "Age", desc: "If a number's on the label, that's the youngest whiskey inside, not the oldest. No age statement doesn't mean no age — it often means blended across years on purpose.", zone: "badge", group: "on" },
+  { term: "Bottled-in-Bond", desc: "A legal guarantee: aged at least 4 years, bottled at exactly 100 proof, made at one distillery in one season. One of the strongest quality signals on any label.", zone: "stamp", group: "legal" },
+  { term: "Straight Bourbon", desc: "Aged at least 2 years with no coloring or flavoring added. \"Straight\" is a legal claim, not a style descriptor.", zone: "stamp", group: "legal" },
+  { term: "Single Barrel", desc: "Comes from one specific barrel, not blended with others. More variation bottle-to-bottle, often more character.", zone: "title", group: "legal" },
+  { term: "Single Malt", desc: "100% malted barley from one distillery — \"single\" means one distillery, not one barrel. It can still be a blend of many barrels and years from that same place.", zone: "title", group: "legal" }
+];
+function wcInspect(i){
+  const t = LABEL_TERMS[i];
+  if (!t) return;
+  const title = $("li-title"), text = $("li-text");
+  if (title) title.textContent = t.term;
+  if (text) text.textContent = t.desc;
+  document.querySelectorAll(".li-zone").forEach(el => el.classList.remove("on"));
+  const zoneEl = $("li-zone-" + t.zone);
+  if (zoneEl) zoneEl.classList.add("on");
+  document.querySelectorAll(".li-term-btn").forEach(el => el.classList.toggle("active", el.dataset.li === String(i)));
+}
+function qgInspectorTermBtn(i){
+  const t = LABEL_TERMS[i];
+  return `<button type="button" class="card li-term-btn${i === 0 ? " active" : ""}" data-li="${i}"
+    onmouseenter="wcInspect(${i})" onfocus="wcInspect(${i})" onclick="wcInspect(${i})">
+    <b style="font:700 13.5px 'Fraunces';color:var(--rust);">${esc(t.term)}</b>
+    <span class="sub" style="font-size:11.5px;line-height:1.5;">${esc(t.desc)}</span>
+  </button>`;
+}
+function qgInspectorPanel(){
+  return `
+    <div class="label-inspector">
+      <div class="li-graphic">
+        <div class="li-zone" id="li-zone-stamp">LEGAL SEAL</div>
+        <div class="li-zone li-zone-title" id="li-zone-title">STYLE / TYPE</div>
+        <div class="li-zone on" id="li-zone-badge">PROOF / AGE</div>
+      </div>
+      <div class="li-desc">
+        <h4 id="li-title">${esc(LABEL_TERMS[0].term)}</h4>
+        <p id="li-text">${esc(LABEL_TERMS[0].desc)}</p>
+      </div>
+    </div>`;
+}
+function qgLessonHead(n, title){
+  return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+    <span style="width:34px;height:34px;border-radius:50%;background:var(--ink);color:var(--cream);display:flex;align-items:center;justify-content:center;font:700 15px 'DM Sans';flex:none;">${n}</span>
+    <h3 style="margin:0;">${esc(title)}</h3>
+  </div>`;
+}
+function qgTermCard(term, desc){
+  return `<div class="card" style="padding:14px 16px;gap:4px;">
+    <b style="font:700 13.5px 'Fraunces';color:var(--rust);">${esc(term)}</b>
+    <span class="sub" style="font-size:11.5px;line-height:1.5;">${esc(desc)}</span>
+  </div>`;
+}
+/* Static educational copy, same pattern as GUIDE_STYLE_TEXT/GUIDE_SERVE_TEXT
+   on the real /guide page — not data-driven, just content. */
+function quickGuideBlock(){
+  const styles = [
+    ["American Whiskey", "The umbrella category — Bourbon and Rye are its two biggest styles, both made under US federal rules."],
+    ["Bourbon", "Corn-forward, sweet, vanilla and caramel from new charred oak. Legally can be made anywhere in the US — Kentucky just makes almost all of it."],
+    ["Rye", "Spicier, drier, peppery — the backbone of a classic Manhattan. Distinct from Canadian \"rye,\" which plays by looser rules."],
+    ["Scotch — Scotland", "Six distinct regions, from Speyside's fruit to Islay's smoke — same grain, radically different results."],
+    ["Irish Whiskey", "Usually triple-distilled, which is exactly what makes it the smoothest common entry point."],
+    ["Japanese Whisky", "Built on Scotch tradition, refined into its own style. Since 2021, the label now means it was actually distilled in Japan."],
+    ["Canadian Whisky", "Often called \"rye\" out of habit, even when it isn't mostly rye grain — the most flexible rulebook of any major whisky-producing country."]
+  ];
+  return `
+    <h2 class="section-title" id="quick-guide">The Quick Guide</h2>
+    <p class="sub" style="font-size:13.5px;margin-top:-14px;margin-bottom:18px;">Three short reads. Everything you need before your first bottle — or your fiftieth.</p>
+
+    <div class="card" style="margin-bottom:20px;padding:24px;">
+      ${qgLessonHead(1, "How to Taste")}
+      <div class="sub" style="font-size:13.5px;line-height:1.7;display:flex;flex-direction:column;gap:10px;">
+        <p style="margin:0;"><b style="color:var(--ink);">Prep your palate first.</b> Don't taste whiskey right after coffee, mint gum, or a spicy meal — your palate is already occupied. A neutral mouth tastes more.</p>
+        <p style="margin:0;"><b style="color:var(--ink);">Start with a micro-sip.</b> Not a full sip — just enough to coat your tongue. Your palate needs a moment to adjust to the alcohol before it can taste anything else. The first sip is always going to taste like alcohol. That's normal, not a verdict on the whiskey.</p>
+        <p style="margin:0;"><b style="color:var(--ink);">Add a few drops of water.</b> This isn't cheating — professional tasters do it deliberately. A little water lowers the proof enough to tame the ethanol burn and physically opens up aromas that were locked behind the alcohol. Start with 2-3 drops for a 1.5oz pour.</p>
+        <p style="margin:0;"><b style="color:var(--ink);">Then try it neat, actually neat.</b> Once your palate's warmed up, taste it with no ice and no water. That's the whiskey as the distiller intended — but it's the third step, not the first.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px;padding:24px;">
+      ${qgLessonHead(2, "Decode the Label")}
+      <p class="sub" style="font-size:13.5px;line-height:1.7;margin:0 0 16px;">Every label has a few numbers you'll see every time, plus a handful of legally regulated phrases that show up more selectively. Knowing both tells you something real about what's in the bottle. Hover or tap a term below to see where it shows up.</p>
+      ${qgInspectorPanel()}
+      <p class="cat-eyebrow" style="margin-bottom:8px;">On every label</p>
+      <div class="grid next" style="margin-bottom:18px;">${LABEL_TERMS.map((t, i) => t.group === "on" ? qgInspectorTermBtn(i) : "").join("")}</div>
+      <p class="cat-eyebrow" style="margin-bottom:8px;">Legal terms worth knowing</p>
+      <div class="grid next">${LABEL_TERMS.map((t, i) => t.group === "legal" ? qgInspectorTermBtn(i) : "").join("")}</div>
+    </div>
+
+    <div class="card" style="margin-bottom:40px;padding:24px;">
+      ${qgLessonHead(3, "Know Your Styles")}
+      <p class="sub" style="font-size:13.5px;line-height:1.7;margin:0;">Some of this comes down to where a whiskey is made. Some comes down to what it's made from. American Whiskey is the umbrella term — Bourbon and Rye are its two most common styles, not separate categories from it. Seven starting points:</p>
+      <div class="grid next" style="margin-top:14px;">${styles.map(([t, d]) => qgTermCard(t, d)).join("")}</div>
+    </div>`;
+}
 function renderHome(){
+  if (!dbCocktails) loadDbCocktails().then(() => { if (parseRoute().name === "home") renderHome(); });
+  const starterCocktails = COCKTAILS.filter(c => c.flexible);
   $("page").innerHTML = `
     <section class="hero hero-grid">
       <div class="hero-left">
         <h1>Know the bottle before you buy it.</h1>
         <p class="tag">One drop. Endless discovery.</p>
-        <p class="lede">A whiskey discovery experience for curious beginners and seasoned enthusiasts. Every bottle here is tagged with two plain-language labels — how easy it is to find, and how far it pushes past the familiar — so you always know your next step.</p>
+        <p class="lede">A whiskey guide for the curious and the seasoned alike. Read the basics once below, then explore bottles tagged by how easy they are to find and how far they push past the familiar.</p>
         <div class="ctas">
-          <a class="btn" href="/discover">Browse the bottles</a>
+          <a class="btn" href="/cocktails">Try a Starter Cocktail →</a>
+          <a class="btn ghost" href="/discover">Browse the Bottles</a>
           <a class="btn gift-cta" href="/gift" onclick="giftReset()">Need a Gift Idea?</a>
-          <a class="btn ghost" href="/guide">Read the Guide first</a>
         </div>
-        ${wcStatBar()}
       </div>
       <div class="hero-slides" id="hero-slides" role="region" aria-label="Cocktail photo slideshow">
         ${HERO_SLIDES.map((sl, i) => `
@@ -3585,6 +3761,36 @@ function renderHome(){
         </div>
       </div>
     </section>
+
+    ${quickFilterBlock()}
+
+    <h2 class="section-title">Never bought a whiskey before? Start here.</h2>
+    <p class="sub" style="font-size:13.5px;margin-top:-14px;margin-bottom:18px;">No bottle required — just a recipe and 5 minutes. Tap or hover a card to see it.</p>
+    ${starterCocktails.length ? `<section class="grid cocktails" style="margin-bottom:40px;">
+      ${starterCocktails.map(c => `
+        <div class="cocktail-flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="cocktail-flip-inner">
+            <div class="cocktail-flip-front">
+              <span class="badge badge-flex">no bottle needed</span>
+              ${cocktailImg(c, "flip-photo")}
+              <span style="font:700 17px 'Fraunces';color:var(--ink);">${esc(c.name)}</span>
+              <p class="sub" style="font-size:12px;line-height:1.4;margin:0;">${esc(c.description)}</p>
+              <span class="flip-hint">Tap or hover for the recipe ↻</span>
+            </div>
+            <div class="cocktail-flip-back">
+              <span class="flip-back-title">${esc(c.name)}</span>
+              <ul class="flip-ingredients">
+                ${c.ingredients.split(",").map(part => part.trim()).filter(Boolean).map(part => `<li>${esc(part)}</li>`).join("")}
+              </ul>
+              <a href="/cocktail/${c.slug}" class="learn" style="color:var(--terracotta);margin-top:auto;">See full recipe →</a>
+            </div>
+          </div>
+        </div>`).join("")}
+    </section>` : ""}
+
+    ${quickGuideBlock()}
+
+    ${browseByCategoryBlock()}
 
     ${memberTicker()}
 
@@ -3615,7 +3821,6 @@ function renderHome(){
   heroIdx = 0;
   if (heroTimer) clearInterval(heroTimer);
   heroTimer = setInterval(() => heroShow(heroIdx + 1), 4500);
-  wcRunStats();
   // If these photos are attached to cocktail records, label them with the live DB names
   loadDbCocktails().then(rows => {
     if (!rows || parseRoute().name !== "home") return;
@@ -4638,6 +4843,7 @@ function mergeDbOnlyCocktails(rows){
       if (r.published === false) { COCKTAILS.splice(idx, 1); return; } // cocktailBySlug kept for safety
       const c = COCKTAILS[idx];
       if (r.tagline && String(r.tagline).trim()) c.description = r.tagline.trim();
+      if (r.emoji && String(r.emoji).trim()) c.emoji = r.emoji.trim();
       const ing = dbCocktailIngredientsText(r);
       if (ing) c.ingredients = ing;
       if (Array.isArray(r.types) && r.types.length) {
@@ -4655,7 +4861,7 @@ function mergeDbOnlyCocktails(rows){
     const cats = dbTypesToCategories(r.types);
     const c = {
       category: cats[0] || "flexible", name: r.name, flexible: cats.length === 0,
-      categories: cats,
+      categories: cats, emoji: (r.emoji && String(r.emoji).trim()) || "",
       pairingNames: Array.isArray(r.pairings) ? r.pairings.map(p => typeof p === "string" ? p : (p && (p.name || p.n))).filter(Boolean) : [],
       description: r.tagline || r.spirit || "A member-suggested recipe from our library.",
       ingredients: dbCocktailIngredientsText(r), bottles: [], slug: rSlug
@@ -4680,9 +4886,21 @@ function cocktailImageUrl(c, kind){
     : (row.image_url || row.thumb_url);  // detail page: full photo, fall back to thumbnail
   return url || IMAGE_SLOTS[cocktailThumbId(c.name)] || "";
 }
+/* No real photo yet → a styled slot (category-tinted gradient + the
+   recipe's own admin-editable emoji + caption) instead of a bare name.
+   Swaps for the real photo automatically once one's uploaded in the admin
+   (thumb_url/image_url) — same "photo slot" idea as bottleImg(), just
+   dressed for the empty state instead of falling back to a plain icon. */
+function cocktailPlaceholder(c){
+  const color = catColor(cocktailCatIds(c)[0] || "");
+  return `<div class="cocktail-ph" style="background:linear-gradient(160deg, ${color.fill}, ${color.edge});">
+    <span class="cocktail-ph-icon" aria-hidden="true">${esc(c.emoji || "🥃")}</span>
+    <span class="cocktail-ph-label">Photo coming soon</span>
+  </div>`;
+}
 function cocktailImg(c, cls, kind){
   const url = cocktailImageUrl(c, kind || (cls === "thumb" ? "thumb" : "full"));
-  return `<div class="img-slot ${cls}${url ? " filled" : ""}">${url ? `<img src="${esc(url)}" alt="${esc(c.name)}" loading="lazy">` : esc(c.name)}</div>`;
+  return `<div class="img-slot ${cls}${url ? " filled" : " ph"}">${url ? `<img src="${esc(url)}" alt="${esc(c.name)}" loading="lazy">` : cocktailPlaceholder(c)}</div>`;
 }
 
 /* Bottle photo (uploaded in the admin Shelf editor) or the striped
@@ -6261,13 +6479,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     background:#e9e2d2; color:#a89b82; }
   .rev-who { display:inline-flex; align-items:center; gap:7px; text-decoration:none; }
   a.rev-who:hover b { color:var(--terracotta); }
-
-  /* Home hero stat counters */
-  .wc-stats { display: flex; gap: 30px; margin-top: auto; padding-top: 26px; flex-wrap: wrap; }
-  .wc-stat { display: flex; flex-direction: column; gap: 2px; }
-  .wc-stat-n { font: 700 26px 'Fraunces', serif; color: var(--ink); line-height: 1; letter-spacing: -.01em; }
-  .wc-stat-l { font: 600 11px 'DM Sans', sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); }
-  @media (max-width: 800px) { .wc-stats { gap: 26px; padding-top: 20px; } .wc-stat-n { font-size: 23px; } }
 
   /* Native-app touch behavior (mobile / PWA) */
   html { -webkit-text-size-adjust: 100%; }
