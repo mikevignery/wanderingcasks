@@ -15,7 +15,7 @@
  */
 
 // EDIT THIS if the domain ever changes (https, no trailing slash)
-const SITE = "https://wanderingcasks.com";
+const SITE = "https://mikevignery.github.io/wanderingcasks";
 
 // Same public Supabase values already visible in your website code
 const SUPABASE_URL = "https://pqbpmcshkwdngesnlzgi.supabase.co";
