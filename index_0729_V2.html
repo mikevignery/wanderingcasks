@@ -302,8 +302,11 @@ nav.main .wc-search input:focus { width: 230px; outline: 2px solid var(--terraco
 }
 /* Three little bottle shapes that replace the single thumbnail (56x56, same
    footprint as .img-slot.thumb so the name/eyebrow line up with bottle tiles) */
-.family-bottles { position: relative; width: 56px; height: 56px; flex: none; display: flex; align-items: center; justify-content: center; }
-.family-bottles svg { height: 100%; width: auto; display: block; }
+.family-bottles { position: relative; width: 56px; height: 56px; flex: none; }
+.family-bottles span { position: absolute; border-radius: 5px; background: #e4d3bc; border: 1px solid #d3bf9f; }
+.family-bottles span:nth-child(1) { left: 2px;  top: 8px; width: 16px; height: 40px; }
+.family-bottles span:nth-child(2) { left: 20px; top: 4px; width: 18px; height: 48px; background: #efe0cb; border-color: #d8c4a2; z-index: 2; }
+.family-bottles span:nth-child(3) { left: 39px; top: 8px; width: 15px; height: 40px; }
 
 /* ---- "How the cards work" explainer (Discover intro) ---- */
 .card-guide {
@@ -516,7 +519,6 @@ nav.main .wc-search input:focus { width: 230px; outline: 2px solid var(--terraco
 }
 .img-slot img { width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: inherit; }
 .img-slot.filled, .img-slot:has(img) { padding: 0; border: 1px solid var(--card-line); background: #efe8db; }
-.img-slot.bottle-glyph { padding: 4px; border-style: solid; }
 .img-slot.hero { width: 100%; aspect-ratio: 16 / 6; }
 .img-slot.thumb { width: 56px; height: 56px; flex: none; border-radius: 10px; }
 .img-slot.modal-img { width: 100%; aspect-ratio: 4 / 3; }
@@ -808,95 +810,6 @@ footer.site nav a:hover { color: #e9b28e; }
 .wc-install-pop .wc-ip-btns { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
 .wc-install-pop .wc-ip-later { background: transparent; border: 1px solid var(--card-line); color: var(--ink); border-radius: 8px; padding: 9px 14px; font: 600 13px 'DM Sans', sans-serif; cursor: pointer; }
 .wc-install-pop .wc-ip-never { background: none; border: none; color: #8a8378; font: 500 12px 'DM Sans', sans-serif; cursor: pointer; text-decoration: underline; margin-top: 12px; padding: 0; }
-
-/* ============================================================
-   CHOOSE YOUR JOURNEY  (home page, sits above the ticker)
-   Two top tabs: The Guided Journey / Wandering my Own Cask.
-   Every colour + font is pulled from the site tokens so this
-   section matches the rest of the page exactly.
-   ============================================================ */
-.jrn { margin: 34px 0 6px; }
-/* top-level tabs (underline style, matches the nav's active tab) */
-.jrn-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 22px; border-bottom: 1px solid var(--card-line); }
-.jrn-tab { appearance: none; -webkit-appearance: none; background: transparent; border: none; cursor: pointer;
-  font: 700 14.5px 'DM Sans', sans-serif; color: var(--sub);
-  padding: 10px 8px; margin-bottom: -1px; border-bottom: 2px solid transparent; }
-.jrn-tab:hover { color: var(--ink); }
-.jrn-tab.on { color: var(--ink); border-bottom-color: var(--terracotta); }
-.jrn-panel { display: none; }
-.jrn-panel.on { display: block; animation: jrnFade .25s ease; }
-@keyframes jrnFade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-
-/* guided sub-tabs (pill style, matches .pill) */
-.jrn-subtabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
-.jrn-subtab { border: 1px solid var(--card-line); background: var(--card); border-radius: 20px;
-  padding: 8px 16px; font: 600 12.5px 'DM Sans', sans-serif; color: var(--ink); cursor: pointer; }
-.jrn-subtab:hover { border-color: var(--terracotta); color: var(--terracotta); }
-.jrn-subtab.on { background: var(--terracotta); border-color: var(--terracotta); color: #fff; }
-.jrn-subpanel { display: none; }
-.jrn-subpanel.on { display: block; }
-
-/* placeholder for the sections we'll fill in later */
-.jrn-empty { border: 1px dashed var(--card-line); border-radius: var(--radius);
-  padding: 40px 20px; text-align: center; color: var(--faint);
-  background: rgba(255,255,255,.4); font-size: 14px; }
-
-/* ---- Quick Cocktails flip cards ---- */
-.qc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px; }
-.qc-card { perspective: 1500px; height: 372px; cursor: pointer; }
-.qc-inner { position: relative; width: 100%; height: 100%;
-  transition: transform .55s cubic-bezier(.2,.7,.2,1); transform-style: preserve-3d; }
-.qc-card:hover .qc-inner, .qc-card.flipped .qc-inner { transform: rotateY(180deg); }
-.qc-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
-  display: flex; flex-direction: column; border-radius: var(--radius); overflow: hidden; }
-.qc-front { background: var(--card); border: 1px solid var(--card-line); padding: 16px; }
-.qc-back { background: var(--ink); border: 1px solid var(--terracotta); padding: 20px 22px;
-  transform: rotateY(180deg); color: var(--cream); }
-.qc-photo { border-radius: 10px; height: 150px; flex: none;
-  background: linear-gradient(160deg, #4a463f, #33302b);
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
-.qc-photo .qc-emoji { font-size: 30px; line-height: 1; }
-.qc-photo .qc-soon { font: 700 11px 'DM Sans', sans-serif; letter-spacing: .09em; color: #cfc8ba; text-transform: uppercase; }
-.qc-name { font-family: 'Fraunces', serif; font-weight: 700; font-size: 22px; color: var(--ink); margin: 14px 0 6px; }
-.qc-desc { color: var(--sub); font-size: 14px; line-height: 1.5; }
-.qc-hint { margin-top: auto; padding-top: 14px; font: 700 13px 'DM Sans', sans-serif; color: var(--terracotta); }
-.qc-back .qc-name { color: var(--cream); margin: 0 0 8px; }
-.qc-ing { list-style: none; margin: 2px 0 0; padding: 0; }
-.qc-ing li { position: relative; padding-left: 16px; margin: 9px 0; font-size: 14.5px; color: #e7e2d8; line-height: 1.4; }
-.qc-ing li::before { content: "\2022"; position: absolute; left: 0; color: var(--terracotta); font-weight: 700; }
-.qc-cta { margin-top: auto; padding-top: 14px; }
-.qc-cta a { font: 700 13px 'DM Sans', sans-serif; color: #e9b28e; }
-.qc-cta a:hover { color: #fff; }
-
-/* ---- Wandering: filter form ---- */
-.jrn-filter { background: var(--card); border: 1px solid var(--card-line); border-radius: var(--radius); padding: 20px 22px; }
-.jrn-filter h3 { font-family: 'Fraunces', serif; font-size: 18px; margin: 0 0 4px; }
-.jrn-filter-sub { color: var(--sub); font-size: 13.5px; margin: 0 0 16px; }
-.jrn-filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
-.jrn-filter .field { margin: 0; }
-.jrn-filter-actions { margin-top: 18px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
-
-/* ---- Browse by category ---- */
-.bcat { margin-top: 30px; }
-.bcat-head { border-bottom: 1px solid var(--card-line); padding-bottom: 8px; margin-bottom: 0; }
-.bcat-head h3 { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; margin: 0; }
-.bcat-sub { color: var(--sub); font-size: 14px; margin: 10px 0 18px; }
-.bcat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
-.bcat-card { display: flex; align-items: center; gap: 14px; background: var(--card);
-  border: 1px solid var(--card-line); border-radius: var(--radius); padding: 16px 18px;
-  transition: border-color .15s ease, transform .15s ease; }
-.bcat-card:hover { border-color: var(--terracotta); transform: translateY(-1px); }
-.bcat-ico { flex: none; width: 56px; height: 56px; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
-.bcat-ico svg { width: 30px; height: 30px; }
-.bcat-txt { display: flex; flex-direction: column; }
-.bcat-name { font: 700 16px 'DM Sans', sans-serif; color: var(--ink); line-height: 1.2; }
-.bcat-count { color: var(--faint); font-size: 13.5px; margin-top: 2px; }
-
-/* touch screens: don't flip on emulated-hover, tap toggles instead */
-@media (hover: none) {
-  .qc-card:hover .qc-inner { transform: none; }
-  .qc-card.flipped .qc-inner { transform: rotateY(180deg); }
-}
 </style>
 </head>
 <body>
@@ -2751,37 +2664,6 @@ let barLoaded = false, barTablesOk = true;
 const DROPLET = `<svg width="26" height="26" viewBox="0 0 64 64" aria-hidden="true"><path d="M32,6 C24,20 16,30 16,40 C16,50.5 23,58 32,58 C41,58 48,50.5 48,40 C48,30 40,20 32,6 Z" fill="#c1531f"></path></svg>`;
 const BOTTLE_ICON = (w, h) => `<svg width="${w}" height="${h}" viewBox="0 0 40 64" style="color:#1a1a1a;flex:none" aria-hidden="true"><path d="M15,2 L25,2 L25,10 L28,16 L28,58 C28,61 25,63 22,63 L18,63 C15,63 12,61 12,58 L12,16 L15,10 Z" fill="none" stroke="currentColor" stroke-width="2"></path><line x1="12" y1="24" x2="28" y2="24" stroke="currentColor" stroke-width="1.5" opacity="0.5"></line></svg>`;
 
-/* Category → colour scheme (from the Discovery colour reference).
-   `fill` is the bottle colour; `edge` is a slightly darker outline. */
-const CAT_COLOR = {
-  "bourbon":       { fill:"#C9623D", edge:"#A94E2F" },
-  "rye":           { fill:"#C55C7E", edge:"#A24763" },
-  "scotch-single": { fill:"#E4A345", edge:"#C4842B" },
-  "scotch-blend":  { fill:"#EEC079", edge:"#D0A056" },
-  "irish":         { fill:"#7AC8A7", edge:"#57A585" },
-  "japanese":      { fill:"#7E77D7", edge:"#5F58B8" }
-};
-function catColor(cat){
-  const base = CAT_COLOR[cat] || { fill:"#575652", edge:"#3E3D3A" };
-  return { fill: base.fill, edge: base.edge, light: mixWhite(base.fill,0.42), lightEdge: mixWhite(base.fill,0.20) };
-}
-/* Mix a hex colour toward white by `amt` (0–1) → a lighter shade. */
-function mixWhite(hex, amt){
-  const n = parseInt(hex.slice(1),16), r=(n>>16)&255, g=(n>>8)&255, b=n&255;
-  const m = c => Math.round(c + (255-c)*amt);
-  return "#" + [m(r),m(g),m(b)].map(v=>v.toString(16).padStart(2,"0")).join("");
-}
-
-/* Solid, filled whiskey-bottle glyph that scales to whatever slot holds it. */
-function bottleGlyph(color){
-  return `<svg viewBox="0 0 128 104" fill="none" stroke="${color}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" style="width:94%;height:auto;flex:none" aria-hidden="true"><path d="M38,24 L38,40 L24,66 L24,93 Q24,97 28,97 L58,97 Q62,97 62,93 L62,66 L48,40 L48,24 Z"></path><rect x="34" y="5" width="18" height="18" rx="5"></rect><rect x="36.5" y="26" width="13" height="6" rx="2"></rect><path d="M24,91 L62,91"></path><path d="M31,88 L31,73 Q31,67 37,67 L49,67 Q55,67 55,73 L55,88 Z"></path><path d="M82,52 L118,52 L113,93 Q113,96.5 109.5,96.5 L90.5,96.5 Q87,96.5 87,93 Z"></path><path d="M89,88 L111,88"></path><path d="M97,67 L106,76 L97,85 L88,76 Z"></path><path d="M106,65 L114,73 L106,81 L98,73 Z"></path></svg>`;
-}
-
-/* Three-bottle line-art for family tiles (single category colour). */
-function threeBottles(color){
-  return `<svg viewBox="13 16 74 76" fill="none" stroke="${color}" stroke-width="5.5" stroke-linejoin="round" stroke-linecap="round" style="height:100%;width:auto;display:block" aria-hidden="true"><path d="M19,53 L25.5,40 L25.5,30 L23.5,30 L23.5,22 L35.5,22 L35.5,30 L33.5,30 L33.5,40 L39.83,53 L46,40 L46,30 L44,30 L44,22 L56,22 L56,30 L54,30 L54,40 L60.17,53 L66.5,40 L66.5,30 L64.5,30 L64.5,22 L76.5,22 L76.5,30 L74.5,30 L74.5,40 L81,53 L81,87 L19,87 Z"></path><path d="M39.83,53 L39.83,87"></path><path d="M60.17,53 L60.17,87"></path></svg>`;
-}
-
 function badge(kind, text){ return `<span class="badge badge-${kind}">${esc(text)}</span>`; }
 function badges(b){ return `<div style="display:flex;gap:6px;flex-wrap:wrap">${badge("avail", b.availability)}${badge("tier", b.tier)}</div>`; }
 function imgSlot(id, cls, label){
@@ -3649,160 +3531,6 @@ function preloadCatalog(){
   loadRatings().then(() => { route(); });
   loadMemberProfiles().then(() => {});
 }
-/* ============================================================
-   "CHOOSE YOUR JOURNEY" — home-page section builders
-   (tabs, Quick Cocktails flip cards, filters, category grid)
-   ============================================================ */
-
-/* Small bottle + rocks-glass icon for the category tiles. */
-const JRN_CAT_ICON = '<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h4v6l2 4v18a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V14l2-4z"/><path d="M13 19h8"/><rect x="24" y="17" width="11" height="16" rx="1.5"/><path d="M24 22h11"/></svg>';
-
-/* Soft per-category tints, kept muted to sit inside the cream palette. */
-const JRN_CAT_TINT = {
-  "bourbon":       { bg: "#f7e3d8", fg: "#c1531f" },
-  "rye":           { bg: "#f6dbe4", fg: "#b03a63" },
-  "scotch-single": { bg: "#f8ebcf", fg: "#b5811f" },
-  "scotch-blend":  { bg: "#f3ecd4", fg: "#93823a" },
-  "irish":         { bg: "#d9ecdd", fg: "#3f7a53" },
-  "japanese":      { bg: "#e3ddf3", fg: "#6a5bb0" }
-};
-
-/* Switch the two top-level tabs. */
-function jrnTab(which, btn){
-  document.querySelectorAll(".jrn-tab").forEach(b => b.classList.toggle("on", b === btn));
-  document.querySelectorAll(".jrn-panel").forEach(p => p.classList.toggle("on", p.getAttribute("data-jrn") === which));
-}
-/* Switch the four guided sub-tabs. */
-function jrnSub(which, btn){
-  document.querySelectorAll(".jrn-subtab").forEach(b => b.classList.toggle("on", b === btn));
-  document.querySelectorAll(".jrn-subpanel").forEach(p => p.classList.toggle("on", p.getAttribute("data-sub") === which));
-}
-/* Tap-to-flip for the Quick Cocktail cards (hover handles desktop). */
-function qcFlip(card){ card.classList.toggle("flipped"); }
-
-/* Quick Cocktails: the "flexible" everyday classics, as flip cards. */
-function quickCocktailsGrid(){
-  const quick = COCKTAILS.filter(c => c.flexible);
-  if (!quick.length) return '<div class="jrn-empty">Quick cocktails are coming soon.</div>';
-  return '<div class="qc-grid">' + quick.map(c => {
-    const ings = String(c.ingredients || "").split(",").map(s => s.trim()).filter(Boolean);
-    return `<div class="qc-card" role="button" tabindex="0" onclick="qcFlip(this)"
-        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();qcFlip(this);}"
-        aria-label="${esc(c.name)} — activate to see the recipe">
-      <div class="qc-inner">
-        <div class="qc-face qc-front">
-          <div class="qc-photo"><span class="qc-emoji" aria-hidden="true">\u{1F943}</span><span class="qc-soon">Photo coming soon</span></div>
-          <div class="qc-name">${esc(c.name)}</div>
-          <p class="qc-desc">${esc(c.description || "")}</p>
-          <div class="qc-hint">Tap or hover for the recipe \u21bb</div>
-        </div>
-        <div class="qc-face qc-back">
-          <div class="qc-name">${esc(c.name)}</div>
-          <ul class="qc-ing">${ings.map(i => `<li>${esc(i)}</li>`).join("")}</ul>
-          <div class="qc-cta"><a href="/cocktail/${c.slug}" onclick="event.stopPropagation()">See full recipe \u2192</a></div>
-        </div>
-      </div>
-    </div>`;
-  }).join("") + "</div>";
-}
-
-/* Wandering my Own Cask: quick filters that open Discover pre-filtered. */
-function wanderFilters(){
-  const typeOpts = CATEGORIES.filter(c => c.id !== "all")
-    .map(c => `<option value="${c.id}">${esc(c.label)}</option>`).join("");
-  return `<div class="jrn-filter">
-    <h3>Filter the collection</h3>
-    <p class="jrn-filter-sub">Set any combination, then open Discover showing just those bottles.</p>
-    <div class="jrn-filter-grid">
-      <div class="field"><label for="jf-type">Type</label>
-        <select id="jf-type"><option value="">Any type</option>${typeOpts}</select></div>
-      <div class="field"><label for="jf-price">Price</label>
-        <select id="jf-price"><option value="">Any price</option>
-          <option value="under-30">Under $30</option>
-          <option value="30-60">$30 &ndash; $60</option>
-          <option value="60-100">$60 &ndash; $100</option>
-          <option value="100-plus">$100+</option></select></div>
-      <div class="field"><label for="jf-region">Region</label>
-        <select id="jf-region"><option value="">Any region</option>
-          <option value="usa">United States</option>
-          <option value="ireland">Ireland</option>
-          <option value="scotland">Scotland</option>
-          <option value="japan">Japan</option></select></div>
-      <div class="field"><label for="jf-proof">Proof</label>
-        <select id="jf-proof"><option value="">Any proof</option>
-          <option value="under-90">Under 90</option>
-          <option value="90-100">90 &ndash; 100</option>
-          <option value="100-110">100 &ndash; 110</option>
-          <option value="110-plus">110+</option></select></div>
-    </div>
-    <div class="jrn-filter-actions">
-      <button type="button" class="btn" onclick="wanderGo()">Find bottles</button>
-      <a class="learn" href="/discover">Or browse everything \u2192</a>
-    </div>
-  </div>`;
-}
-/* Read the four dropdowns and open Discover with matching filters. */
-function wanderGo(){
-  const val = id => { const el = document.getElementById(id); return el ? el.value : ""; };
-  const params = [];
-  const t = val("jf-type"), p = val("jf-price"), r = val("jf-region"), pr = val("jf-proof");
-  if (t)  params.push("type="   + encodeURIComponent(t));
-  if (p)  params.push("price="  + encodeURIComponent(p));
-  if (r)  params.push("region=" + encodeURIComponent(r));
-  if (pr) params.push("proof="  + encodeURIComponent(pr));
-  go("/discover" + (params.length ? "?" + params.join("&") : ""));
-}
-
-/* Browse by category: one tile per whiskey style, live bottle counts. */
-function browseByCategory(){
-  const counts = {};
-  BOTTLES.forEach(b => { counts[b.category] = (counts[b.category] || 0) + 1; });
-  const cards = CATEGORIES.filter(c => c.id !== "all").map(c => {
-    const n = counts[c.id] || 0;
-    const tint = JRN_CAT_TINT[c.id] || { bg: "#eee", fg: "#555" };
-    return `<a class="bcat-card" href="/discover/${c.id}">
-      <span class="bcat-ico" style="background:${tint.bg};color:${tint.fg}">${JRN_CAT_ICON}</span>
-      <span class="bcat-txt"><span class="bcat-name">${esc(c.label)}</span>
-        <span class="bcat-count">${n} bottle${n === 1 ? "" : "s"}</span></span>
-    </a>`;
-  }).join("");
-  return `<div class="bcat">
-    <div class="bcat-head"><h3>Browse by category</h3></div>
-    <p class="bcat-sub">Every launch bottle, sorted by style.</p>
-    <div class="bcat-grid">${cards}</div>
-  </div>`;
-}
-
-/* The whole "Choose your Journey" block, inserted above the ticker. */
-function journeySection(){
-  return `
-  <section class="jrn" aria-label="Choose your Journey">
-    <h2 class="section-title">Choose your Journey</h2>
-    <div class="jrn-tabs" role="tablist">
-      <button class="jrn-tab on" type="button" onclick="jrnTab('guided', this)">The guided Journey</button>
-      <button class="jrn-tab" type="button" onclick="jrnTab('wander', this)">Wandering my Own Cask</button>
-    </div>
-
-    <div class="jrn-panel on" data-jrn="guided">
-      <div class="jrn-subtabs" role="tablist">
-        <button class="jrn-subtab on" type="button" onclick="jrnSub('cocktails', this)">Quick Cocktails</button>
-        <button class="jrn-subtab" type="button" onclick="jrnSub('taste', this)">How to Taste</button>
-        <button class="jrn-subtab" type="button" onclick="jrnSub('decode', this)">Decode the Bottle</button>
-        <button class="jrn-subtab" type="button" onclick="jrnSub('styles', this)">Know your styles</button>
-      </div>
-      <div class="jrn-subpanel on" data-sub="cocktails">${quickCocktailsGrid()}</div>
-      <div class="jrn-subpanel" data-sub="taste"><div class="jrn-empty">How to Taste &mdash; coming soon.</div></div>
-      <div class="jrn-subpanel" data-sub="decode"><div class="jrn-empty">Decode the Bottle &mdash; coming soon.</div></div>
-      <div class="jrn-subpanel" data-sub="styles"><div class="jrn-empty">Know your styles &mdash; coming soon.</div></div>
-    </div>
-
-    <div class="jrn-panel" data-jrn="wander">
-      ${wanderFilters()}
-      ${browseByCategory()}
-    </div>
-  </section>`;
-}
-
 function renderHome(){
   $("page").innerHTML = `
     <section class="hero hero-grid">
@@ -3829,11 +3557,9 @@ function renderHome(){
       </div>
     </section>
 
-    ${journeySection()}
-
     ${memberTicker()}
 
-    <h2 class="section-title">Keep Discovering</h2>
+    <h2 class="section-title">Pick a way in</h2>
     <section class="entry-cards">
       <div class="card">
         <h3>Discover</h3>
@@ -3918,7 +3644,6 @@ function bottleCard(b){
 function flagshipCard(rep, family, key){
   const total = family.length;                    // whole family size (e.g. 5 expressions)
   const slug = brandSlug(key);
-  const c = catColor(rep.category);
   return `
     <div class="card bottle-tile flagship-tile">
       <div class="family-banner">
@@ -3926,7 +3651,7 @@ function flagshipCard(rep, family, key){
         <span class="family-badge">${total} expressions</span>
       </div>
       <div style="display:flex;gap:12px;align-items:flex-start">
-        <div class="family-bottles" aria-hidden="true">${threeBottles(c.fill)}</div>
+        <div class="family-bottles" aria-hidden="true"><span></span><span></span><span></span></div>
         <div style="display:flex;flex-direction:column;gap:4px">
           <span class="cat-eyebrow">${esc(CAT_LABEL[rep.category])}</span>
           <span class="bottle-name">${esc(key)}</span>
@@ -3959,64 +3684,13 @@ function renderBrand(slug){
     <section class="grid bottles">${fam.map(bottleCard).join("")}</section>
     ${addOnsCTA()}`;
 }
-/* ---- Discover quick-filters (from the home "Wandering" dropdowns) ----
-   These read ?type=&price=&region=&proof= off the address bar. When none
-   are present the page behaves exactly as it always did. */
-function wcDiscoverQuery(){
-  const out = {};
-  String(location.search || "").replace(/^\?/, "").split("&").forEach(pair => {
-    if (!pair) return;
-    const i = pair.indexOf("=");
-    const k = decodeURIComponent(i < 0 ? pair : pair.slice(0, i));
-    const v = i < 0 ? "" : decodeURIComponent(pair.slice(i + 1));
-    if (k) out[k] = v;
-  });
-  return out;
-}
-function wcPriceLow(b){ const m = String(b.price || "").replace(/[^0-9.]/g, " ").trim().match(/\d+(\.\d+)?/); return m ? parseFloat(m[0]) : null; }
-function wcProofNum(b){ const m = String(b.abv || "").match(/(\d+(\.\d+)?)\s*proof/i); return m ? parseFloat(m[1]) : null; }
-function wcRegionKey(b){
-  const r = String(b.region || "").toLowerCase();
-  if (/ireland/.test(r)) return "ireland";
-  if (/scotland/.test(r)) return "scotland";
-  if (/japan/.test(r))    return "japan";
-  if (/usa|kentucky|tennessee|vermont|united states/.test(r)) return "usa";
-  return "other";
-}
-const WC_PRICE_BUCKETS = { "under-30": [0, 30], "30-60": [30, 60], "60-100": [60, 100], "100-plus": [100, Infinity] };
-const WC_PROOF_BUCKETS = { "under-90": [0, 90], "90-100": [90, 100], "100-110": [100, 110], "110-plus": [110, Infinity] };
-function wcInBucket(val, bucket, table){ const b = table[bucket]; if (!b || val == null) return false; return val >= b[0] && val < b[1]; }
-function wcApplyAttrFilters(list, q){
-  return list.filter(b => {
-    if (q.price  && !wcInBucket(wcPriceLow(b), q.price, WC_PRICE_BUCKETS)) return false;
-    if (q.proof  && !wcInBucket(wcProofNum(b), q.proof, WC_PROOF_BUCKETS)) return false;
-    if (q.region && wcRegionKey(b) !== q.region) return false;
-    return true;
-  });
-}
-function wcFilterLabel(q){
-  const parts = [];
-  const priceTxt  = { "under-30": "under $30", "30-60": "$30\u201360", "60-100": "$60\u2013100", "100-plus": "$100+" };
-  const proofTxt  = { "under-90": "under 90 proof", "90-100": "90\u2013100 proof", "100-110": "100\u2013110 proof", "110-plus": "110+ proof" };
-  const regionTxt = { usa: "United States", ireland: "Ireland", scotland: "Scotland", japan: "Japan" };
-  if (q.type   && CAT_LABEL[q.type]) parts.push(CAT_LABEL[q.type]);
-  if (q.price  && priceTxt[q.price]) parts.push(priceTxt[q.price]);
-  if (q.region && regionTxt[q.region]) parts.push(regionTxt[q.region]);
-  if (q.proof  && proofTxt[q.proof]) parts.push(proofTxt[q.proof]);
-  return parts.join(" \u00b7 ");
-}
 function renderDiscover(cat){
   if (!dbBottles) loadDbBottles().then(() => { const r = parseRoute(); if (r.name === "discover") renderDiscover(r.arg); });
   if (!ratingsRows) loadRatings().then(() => { const r = parseRoute(); if (r.name === "discover") renderDiscover(r.arg); });
   // "cat" may be a single id, a comma-separated list (e.g. "bourbon,rye"), or "all".
-  const q = wcDiscoverQuery();
-  let cats = String(cat || "all").split(",").map(s => s.trim()).filter(id => CAT_LABEL[id] && id !== "all");
-  // A ?type= coming from the home-page "Wandering" filters acts like a category pick.
-  if (!cats.length && q.type && CAT_LABEL[q.type] && q.type !== "all") cats = [q.type];
+  const cats = String(cat || "all").split(",").map(s => s.trim()).filter(id => CAT_LABEL[id] && id !== "all");
   const activeArg = cats.length ? cats.join(",") : "all";
-  let list = cats.length ? BOTTLES.filter(b => cats.includes(b.category)) : BOTTLES;
-  list = wcApplyAttrFilters(list, q);              // price / region / proof from the address bar
-  const qActive = !!(q.type || q.price || q.region || q.proof);
+  const list = cats.length ? BOTTLES.filter(b => cats.includes(b.category)) : BOTTLES;
   const shown = applyStarFilter("bottle", list);
   // Collapse any family with 3+ bottles into a single flagship card.
   const fams = familyMap();
@@ -4066,7 +3740,6 @@ function renderDiscover(cat){
     </section>
     ${forYouRow()}
     ${catPills(activeArg, "discover")}
-    ${qActive ? `<p class="sub" style="font-size:13px;margin:2px 0 10px;">Filtered by <strong>${esc(wcFilterLabel(q))}</strong> &mdash; ${shown.length} match${shown.length === 1 ? "" : "es"}. <a href="/discover">Clear filters →</a></p>` : ""}
     ${cats.length > 1 ? `<p class="sub" style="font-size:13px;margin:2px 0 6px;">Showing ${cats.map(c => esc(CAT_LABEL[c])).join(" + ")} bottles for this cocktail. <a href="/discover">Show all whiskey →</a></p>` : ""}
     ${starFilterRow("bottle")}
     ${starFilterNote("bottle", shown.length, list.length)}
@@ -4986,12 +4659,7 @@ function cocktailImg(c, cls, kind){
    name placeholder when none exists \u2014 same pattern as cocktails. */
 function bottleImg(b, cls){
   const url = b.image || "";
-  if (url) {
-    return `<div class="img-slot ${cls} filled"><img src="${esc(url)}" alt="${esc(b.name)}" loading="lazy"></div>`;
-  }
-  // No photo yet → coloured whiskey-bottle icon, tinted by category.
-  const c = catColor(b.category);
-  return `<div class="img-slot ${cls} bottle-glyph" style="background:${c.fill}14;border:1px solid ${c.fill}40" role="img" aria-label="${esc(b.name)}" title="${esc(b.name)}">${bottleGlyph(c.fill)}</div>`;
+  return `<div class="img-slot ${cls}${url ? " filled" : ""}">${url ? `<img src="${esc(url)}" alt="${esc(b.name)}" loading="lazy">` : esc(b.name)}</div>`;
 }
 
 function renderCocktails(cat){
