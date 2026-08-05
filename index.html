@@ -811,18 +811,52 @@ footer.site nav a:hover { color: #e9b28e; }
 
 /* ============================================================
    CHOOSE YOUR JOURNEY  (home page, sits above the ticker)
-   Two top-tabs: The Guided Journey / Wandering my Own Cask.
+   Two photo choice-cards, side by side. Picking one fades the
+   other out and expands the chosen card to the full section
+   width, revealing its content panel underneath. The trailing
+   arrow-circle on the chosen card turns into a close (X).
    Every colour + font is pulled from the site tokens so this
    section matches the rest of the page exactly.
    ============================================================ */
 .jrn { margin: 34px 0 6px; }
-/* top-level tabs (underline style, matches the nav's active tab) */
-.jrn-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 22px; border-bottom: 1px solid var(--card-line); }
-.jrn-tab { appearance: none; -webkit-appearance: none; background: transparent; border: none; cursor: pointer;
-  font: 700 14.5px 'DM Sans', sans-serif; color: var(--sub);
-  padding: 10px 8px; margin-bottom: -1px; border-bottom: 2px solid transparent; }
-.jrn-tab:hover { color: var(--ink); }
-.jrn-tab.on { color: var(--ink); border-bottom-color: var(--terracotta); }
+
+/* ---- Choice row: two photo buttons ---- */
+.jrn-choice { display: flex; gap: 18px; margin-bottom: 4px; }
+.jrn-opt { position: relative; flex: 1 1 0; min-width: 0; height: 152px;
+  border: none; border-radius: var(--radius); overflow: hidden; cursor: pointer; padding: 0;
+  text-align: left; font: inherit; opacity: 1;
+  transition: flex-grow .4s ease, flex-basis .4s ease, opacity .3s ease, margin .4s ease; }
+.jrn-choice[data-picked] .jrn-opt { flex-grow: 0; flex-basis: 0; opacity: 0; margin: 0; pointer-events: none; }
+.jrn-choice[data-picked="guided"] .jrn-opt-guided,
+.jrn-choice[data-picked="wander"] .jrn-opt-wander { flex-grow: 1; flex-basis: 100%; opacity: 1; pointer-events: auto; }
+.jrn-opt-bg { position: absolute; inset: 0; background-size: cover; background-position: center 30%; }
+.jrn-opt-wander .jrn-opt-bg { background-image: linear-gradient(135deg, #2c2019, #17130f); }
+.jrn-opt-glyph { position: absolute; right: -18px; bottom: -22px; width: 160px; height: 160px; color: rgba(255,255,255,.07); }
+.jrn-opt-scrim { position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgba(10,8,6,.88) 0%, rgba(10,8,6,.74) 48%, rgba(10,8,6,.32) 100%); }
+.jrn-opt-body { position: relative; height: 100%; display: flex; align-items: center; gap: 14px; padding: 18px 66px 18px 20px; }
+.jrn-opt-ico { flex: none; width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  background: var(--terracotta); color: #fff; }
+.jrn-opt-wander .jrn-opt-ico { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.55); }
+.jrn-opt-ico svg { width: 20px; height: 20px; }
+.jrn-opt-text { color: #fff; min-width: 0; }
+.jrn-opt-title { display: block; font-family: 'Fraunces', serif; font-weight: 700; font-size: 19px; }
+.jrn-opt-sub { display: block; font: 400 13px 'DM Sans', sans-serif; color: rgba(255,255,255,.8); margin-top: 4px; line-height: 1.4; max-width: 360px; }
+.jrn-opt-arrow { position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+  width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  background: var(--terracotta); color: #fff; transition: filter .15s ease; }
+.jrn-opt-wander .jrn-opt-arrow { background: #fff; color: var(--ink); }
+.jrn-opt-arrow svg { width: 17px; height: 17px; position: absolute; }
+.jrn-opt-arrow .jrn-x { opacity: 0; transform: rotate(-45deg); transition: opacity .15s ease, transform .2s ease; }
+.jrn-opt-arrow .jrn-go { opacity: 1; transition: opacity .15s ease; }
+.jrn-opt.chosen .jrn-opt-arrow .jrn-go { opacity: 0; }
+.jrn-opt.chosen .jrn-opt-arrow .jrn-x { opacity: 1; transform: rotate(0deg); }
+.jrn-opt:hover .jrn-opt-arrow { filter: brightness(1.08); }
+.jrn-opt:focus-visible { outline: 2px solid var(--terracotta); outline-offset: 2px; }
+
+/* ---- Revealed content ---- */
+.jrn-reveal { display: none; }
+.jrn-reveal.on { display: block; margin-top: 22px; animation: jrnFade .3s ease; }
 .jrn-panel { display: none; }
 .jrn-panel.on { display: block; animation: jrnFade .25s ease; }
 @keyframes jrnFade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
@@ -842,7 +876,7 @@ footer.site nav a:hover { color: #e9b28e; }
   background: rgba(255,255,255,.4); font-size: 14px; }
 
 /* ---- Quick Cocktails flip cards ---- */
-.qc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px; }
+.qc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
 .qc-card { perspective: 1500px; height: 372px; cursor: pointer; }
 .qc-inner { position: relative; width: 100%; height: 100%;
   transition: transform .55s cubic-bezier(.2,.7,.2,1); transform-style: preserve-3d; }
@@ -850,23 +884,31 @@ footer.site nav a:hover { color: #e9b28e; }
 .qc-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
   display: flex; flex-direction: column; border-radius: var(--radius); overflow: hidden; }
 .qc-front { background: var(--card); border: 1px solid var(--card-line); padding: 16px; }
-.qc-back { background: var(--ink); border: 1px solid var(--terracotta); padding: 20px 22px;
-  transform: rotateY(180deg); color: var(--cream); }
-.qc-photo { border-radius: 10px; height: 150px; flex: none;
+.qc-back { position: relative; background: var(--ink); border: 1px solid var(--terracotta); padding: 24px 22px 20px;
+  text-align: center; transform: rotateY(180deg); color: var(--cream); }
+.qc-photo { border-radius: 10px; height: 150px; flex: none; overflow: hidden;
   background: linear-gradient(160deg, #4a463f, #33302b);
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+.qc-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .qc-photo .qc-emoji { font-size: 30px; line-height: 1; }
 .qc-photo .qc-soon { font: 700 11px 'DM Sans', sans-serif; letter-spacing: .09em; color: #cfc8ba; text-transform: uppercase; }
 .qc-name { font-family: 'Fraunces', serif; font-weight: 700; font-size: 22px; color: var(--ink); margin: 14px 0 6px; }
 .qc-desc { color: var(--sub); font-size: 14px; line-height: 1.5; }
 .qc-hint { margin-top: auto; padding-top: 14px; font: 700 13px 'DM Sans', sans-serif; color: var(--terracotta); }
-.qc-back .qc-name { color: var(--cream); margin: 0 0 8px; }
-.qc-ing { list-style: none; margin: 2px 0 0; padding: 0; }
-.qc-ing li { position: relative; padding-left: 16px; margin: 9px 0; font-size: 14.5px; color: #e7e2d8; line-height: 1.4; }
-.qc-ing li::before { content: "\2022"; position: absolute; left: 0; color: var(--terracotta); font-weight: 700; }
-.qc-cta { margin-top: auto; padding-top: 14px; }
+.qc-back .qc-name { color: var(--cream); margin: 0; position: relative; z-index: 1; }
+.qc-divider { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; gap: 10px;
+  margin: 10px 0 18px; color: var(--terracotta); font-size: 11px; }
+.qc-divider::before, .qc-divider::after { content: ""; width: 34px; height: 1px; background: rgba(255,255,255,.25); }
+.qc-glass { position: absolute; right: -14px; bottom: -10px; width: 130px; height: 140px; color: rgba(255,255,255,.06); pointer-events: none; }
+.qc-ing { position: relative; z-index: 1; list-style: none; margin: 2px 0 0; padding: 0; }
+.qc-ing li { font-size: 14.5px; color: #e7e2d8; line-height: 1.4; margin: 9px 0; }
+.qc-cta { position: relative; z-index: 1; margin-top: auto; padding-top: 14px; }
 .qc-cta a { font: 700 13px 'DM Sans', sans-serif; color: #e9b28e; }
 .qc-cta a:hover { color: #fff; }
+@media (max-width: 800px) {
+  .jrn-choice { flex-direction: column; }
+  .qc-grid { grid-template-columns: 1fr; }
+}
 
 /* ---- Wandering: filter form ---- */
 .jrn-filter { background: var(--card); border: 1px solid var(--card-line); border-radius: var(--radius); padding: 20px 22px; }
@@ -3655,6 +3697,16 @@ function preloadCatalog(){
 /* Small bottle + rocks-glass icon for the category tiles. */
 const JRN_CAT_ICON = '<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h4v6l2 4v18a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V14l2-4z"/><path d="M13 19h8"/><rect x="24" y="17" width="11" height="16" rx="1.5"/><path d="M24 22h11"/></svg>';
 
+/* Icons for the two "Choose your Journey" choice cards. */
+const JRN_ICO_SIGNPOST = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21v-9"/><path d="M12 5v2"/><path d="M5 13V7a1 1 0 0 1 1-1h4l1.2 1.5L10 9h7a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1Z"/></svg>';
+const JRN_ICO_SEARCH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>';
+/* Arrow (default) + X (once the card is chosen), stacked in the same circle. */
+const JRN_ICO_ARROW_X = '<svg class="jrn-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg><svg class="jrn-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12"/><path d="M18 6 6 18"/></svg>';
+/* Oversized faint bottle+glass motif for the "explore" card's dark background. */
+const JRN_GLYPH_BIG = JRN_CAT_ICON.replace('viewBox="0 0 40 40"', 'viewBox="0 0 40 40" aria-hidden="true"');
+/* Ghost rocks-glass line art for the back of the Quick Cocktail cards. */
+const QC_GLASS_GLYPH = '<svg viewBox="0 0 120 130" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="26" y="42" width="60" height="66" rx="6"/><path d="M38 42c6 11 6 22 0 33M52 42c6 15 6 28 0 43M66 42c6 11 6 22 0 33M80 42c6 15 6 28 0 43" opacity=".5"/><path d="M58 16c15 5 24 16 15 30-8 13-25 8-25-3" /></svg>';
+
 /* Soft per-category tints, kept muted to sit inside the cream palette. */
 const JRN_CAT_TINT = {
   "bourbon":       { bg: "#f7e3d8", fg: "#c1531f" },
@@ -3665,10 +3717,29 @@ const JRN_CAT_TINT = {
   "japanese":      { bg: "#e3ddf3", fg: "#6a5bb0" }
 };
 
-/* Switch the two top-level tabs. */
-function jrnTab(which, btn){
-  document.querySelectorAll(".jrn-tab").forEach(b => b.classList.toggle("on", b === btn));
-  document.querySelectorAll(".jrn-panel").forEach(p => p.classList.toggle("on", p.getAttribute("data-jrn") === which));
+/* Choose your Journey: pick a card (or click the chosen one / its X to close). */
+let jrnPicked = null;
+function jrnPick(which){
+  const choice = document.getElementById("jrn-choice");
+  const reveal = document.getElementById("jrn-reveal");
+  if (!choice || !reveal) return;
+  const opts = choice.querySelectorAll(".jrn-opt");
+  if (jrnPicked === which){
+    jrnPicked = null;
+    choice.removeAttribute("data-picked");
+    opts.forEach(b => { b.classList.remove("chosen"); b.setAttribute("aria-expanded", "false"); });
+    reveal.classList.remove("on");
+    return;
+  }
+  jrnPicked = which;
+  choice.setAttribute("data-picked", which);
+  opts.forEach(b => {
+    const isChosen = b.classList.contains("jrn-opt-" + which);
+    b.classList.toggle("chosen", isChosen);
+    b.setAttribute("aria-expanded", String(isChosen));
+  });
+  reveal.classList.add("on");
+  reveal.querySelectorAll(".jrn-panel").forEach(p => p.classList.toggle("on", p.getAttribute("data-jrn") === which));
 }
 /* Switch the four guided sub-tabs. */
 function jrnSub(which, btn){
@@ -3678,24 +3749,31 @@ function jrnSub(which, btn){
 /* Tap-to-flip for the Quick Cocktail cards (hover handles desktop). */
 function qcFlip(card){ card.classList.toggle("flipped"); }
 
-/* Quick Cocktails: the "flexible" everyday classics, as flip cards. */
+/* Quick Cocktails: the everyday classics, as flip cards.
+   Fixed trio (in this order) so the row always lays out three columns. */
+const QUICK_COCKTAIL_NAMES = ["Old Fashioned", "Manhattan", "Whiskey Sour"];
 function quickCocktailsGrid(){
-  const quick = COCKTAILS.filter(c => c.flexible);
+  const quick = QUICK_COCKTAIL_NAMES.map(n => COCKTAILS.find(c => c.name === n)).filter(Boolean);
   if (!quick.length) return '<div class="jrn-empty">Quick cocktails are coming soon.</div>';
   return '<div class="qc-grid">' + quick.map(c => {
     const ings = String(c.ingredients || "").split(",").map(s => s.trim()).filter(Boolean);
+    const photoUrl = cocktailImageUrl(c, "full");
     return `<div class="qc-card" role="button" tabindex="0" onclick="qcFlip(this)"
         onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();qcFlip(this);}"
         aria-label="${esc(c.name)} — activate to see the recipe">
       <div class="qc-inner">
         <div class="qc-face qc-front">
-          <div class="qc-photo"><span class="qc-emoji" aria-hidden="true">\u{1F943}</span><span class="qc-soon">Photo coming soon</span></div>
+          <div class="qc-photo">${photoUrl
+            ? `<img src="${esc(photoUrl)}" alt="${esc(c.name)}" loading="lazy">`
+            : `<span class="qc-emoji" aria-hidden="true">\u{1F943}</span><span class="qc-soon">Photo coming soon</span>`}</div>
           <div class="qc-name">${esc(c.name)}</div>
           <p class="qc-desc">${esc(c.description || "")}</p>
-          <div class="qc-hint">Tap or hover for the recipe \u21bb</div>
+          <div class="qc-hint">Tap or hover for the recipe \u2192</div>
         </div>
         <div class="qc-face qc-back">
           <div class="qc-name">${esc(c.name)}</div>
+          <div class="qc-divider" aria-hidden="true">\u25C6</div>
+          <div class="qc-glass" aria-hidden="true">${QC_GLASS_GLYPH}</div>
           <ul class="qc-ing">${ings.map(i => `<li>${esc(i)}</li>`).join("")}</ul>
           <div class="qc-cta"><a href="/cocktail/${c.slug}" onclick="event.stopPropagation()">See full recipe \u2192</a></div>
         </div>
@@ -3773,30 +3851,56 @@ function browseByCategory(){
 
 /* The whole "Choose your Journey" block, inserted above the ticker. */
 function journeySection(){
+  const heroPhoto = IMAGE_SLOTS["cocktail-hero"] || "";
   return `
   <section class="jrn" aria-label="Choose your Journey">
     <h2 class="section-title">Choose your Journey</h2>
-    <div class="jrn-tabs" role="tablist">
-      <button class="jrn-tab on" type="button" onclick="jrnTab('guided', this)">The guided Journey</button>
-      <button class="jrn-tab" type="button" onclick="jrnTab('wander', this)">Wandering my Own Cask</button>
+    <div class="jrn-choice" id="jrn-choice">
+      <button class="jrn-opt jrn-opt-guided" type="button" onclick="jrnPick('guided')" aria-expanded="false">
+        <span class="jrn-opt-bg"${heroPhoto ? ` style="background-image:url('${esc(heroPhoto)}')"` : ""}></span>
+        <span class="jrn-opt-scrim"></span>
+        <span class="jrn-opt-body">
+          <span class="jrn-opt-ico">${JRN_ICO_SIGNPOST}</span>
+          <span class="jrn-opt-text">
+            <span class="jrn-opt-title">I want guidance</span>
+            <span class="jrn-opt-sub">Not sure where to begin? Aidan will point you to bottles and cocktails you'll love.</span>
+          </span>
+        </span>
+        <span class="jrn-opt-arrow">${JRN_ICO_ARROW_X}</span>
+      </button>
+      <button class="jrn-opt jrn-opt-wander" type="button" onclick="jrnPick('wander')" aria-expanded="false">
+        <span class="jrn-opt-bg"></span>
+        <span class="jrn-opt-glyph">${JRN_GLYPH_BIG}</span>
+        <span class="jrn-opt-scrim"></span>
+        <span class="jrn-opt-body">
+          <span class="jrn-opt-ico">${JRN_ICO_SEARCH}</span>
+          <span class="jrn-opt-text">
+            <span class="jrn-opt-title">I want to explore</span>
+            <span class="jrn-opt-sub">I know what I like. Let me explore the full collection, search, and filter on my own.</span>
+          </span>
+        </span>
+        <span class="jrn-opt-arrow">${JRN_ICO_ARROW_X}</span>
+      </button>
     </div>
 
-    <div class="jrn-panel on" data-jrn="guided">
-      <div class="jrn-subtabs" role="tablist">
-        <button class="jrn-subtab on" type="button" onclick="jrnSub('cocktails', this)">Quick Cocktails</button>
-        <button class="jrn-subtab" type="button" onclick="jrnSub('taste', this)">How to Taste</button>
-        <button class="jrn-subtab" type="button" onclick="jrnSub('decode', this)">Decode the Bottle</button>
-        <button class="jrn-subtab" type="button" onclick="jrnSub('styles', this)">Know your styles</button>
+    <div class="jrn-reveal" id="jrn-reveal">
+      <div class="jrn-panel" data-jrn="guided">
+        <div class="jrn-subtabs" role="tablist">
+          <button class="jrn-subtab on" type="button" onclick="jrnSub('cocktails', this)">Quick Cocktails</button>
+          <button class="jrn-subtab" type="button" onclick="jrnSub('taste', this)">How to Taste</button>
+          <button class="jrn-subtab" type="button" onclick="jrnSub('decode', this)">Decode the Bottle</button>
+          <button class="jrn-subtab" type="button" onclick="jrnSub('styles', this)">Know your styles</button>
+        </div>
+        <div class="jrn-subpanel on" data-sub="cocktails">${quickCocktailsGrid()}</div>
+        <div class="jrn-subpanel" data-sub="taste"><div class="jrn-empty">How to Taste &mdash; coming soon.</div></div>
+        <div class="jrn-subpanel" data-sub="decode"><div class="jrn-empty">Decode the Bottle &mdash; coming soon.</div></div>
+        <div class="jrn-subpanel" data-sub="styles"><div class="jrn-empty">Know your styles &mdash; coming soon.</div></div>
       </div>
-      <div class="jrn-subpanel on" data-sub="cocktails">${quickCocktailsGrid()}</div>
-      <div class="jrn-subpanel" data-sub="taste"><div class="jrn-empty">How to Taste &mdash; coming soon.</div></div>
-      <div class="jrn-subpanel" data-sub="decode"><div class="jrn-empty">Decode the Bottle &mdash; coming soon.</div></div>
-      <div class="jrn-subpanel" data-sub="styles"><div class="jrn-empty">Know your styles &mdash; coming soon.</div></div>
-    </div>
 
-    <div class="jrn-panel" data-jrn="wander">
-      ${wanderFilters()}
-      ${browseByCategory()}
+      <div class="jrn-panel" data-jrn="wander">
+        ${wanderFilters()}
+        ${browseByCategory()}
+      </div>
     </div>
   </section>`;
 }
