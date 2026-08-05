@@ -23,6 +23,7 @@
 const ALLOWED_ORIGINS = [
   "https://wanderingcasks.com",
   "https://www.wanderingcasks.com",
+  "https://mikevignery.github.io/wanderingcasks",
   "https://brian-three.vercel.app"
 ];
 const ALLOWED_ORIGIN = ALLOWED_ORIGINS[0];   // the fallback answer
