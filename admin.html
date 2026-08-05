@@ -1037,6 +1037,7 @@ function cocktailForm(c){
   <div class="field"><label>Method — one step per line, in order</label>
     <textarea id="c${c.id}-met" rows="5" placeholder="Muddle the sugar cube with bitters…">${esc(met)}</textarea></div>
   ${cocktailBottlePicker(c)}
+  <label class="check-line"><input type="checkbox" id="c${c.id}-flex" ${c.wc_flexible ? 'checked' : ''}> Flexible — no specific bottle needed (shows in "Start here" on the homepage; independent of Match categories above, so it can keep real categories too)</label>
   <label class="check-line"><input type="checkbox" id="c${c.id}-pub" ${c.published !== false ? 'checked' : ''}> Published (unticked = draft, hidden from members)</label>`;
 }
 function collectCocktail(c){
@@ -1059,6 +1060,7 @@ function collectCocktail(c){
     }),
     method: v('met').split('\n').map(l => l.trim()).filter(Boolean),
     pairings: (cocktailPairings[c.id] || []).slice(),
+    wc_flexible: $(`c${c.id}-flex`).checked,
     published: $(`c${c.id}-pub`).checked
   };
 }
@@ -1112,6 +1114,7 @@ async function saveCocktail(id){
   if (error) {
     if (/pairings/.test(error.message)) return msg(box, 'The pairings column isn\u2019t in your database yet — run cocktail-bottles-setup.sql in the Supabase SQL Editor, then save again.', 'err');
     if (/thumb_url/.test(error.message)) return msg(box, 'The thumb_url column isn\u2019t in your database yet — run cocktail-images-upgrade.sql in the Supabase SQL Editor, then save again.', 'err');
+    if (/wc_flexible/.test(error.message)) return msg(box, 'The wc_flexible column isn\u2019t in your database yet — run cocktail-flexible-flag.sql in the Supabase SQL Editor, then save again.', 'err');
     return msg(box, error.message.includes('duplicate') ? 'That URL slug is already used by another recipe.' : error.message, 'err');
   }
   Object.assign(c, payload);
