@@ -3514,10 +3514,9 @@ function renderNav(r){
       </a>
     </div>
     <nav class="main" aria-label="Primary">
-      <a href="/discover" class="${is("discover")}">Discover</a>
-      <a href="/guide" class="${is("guide")}">Guide</a>
+      <a href="/" class="${is("home")}">Quick Guide</a>
       <a href="/cocktails" class="${is("cocktails")}">Cocktails</a>
-      <a href="/regions" class="${is("regions")}">Regions</a>
+      <a href="/discover" class="${is("discover")}">Discovery Hub</a>
       ${authLinks}
     </nav>
     <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu" onclick="toggleMenu()">
@@ -3530,10 +3529,9 @@ function renderNav(r){
       <nav class="panel" aria-label="Mobile">
         <div class="mhead" aria-hidden="true"><span class="wordmark">Wandering Casks</span></div>
         ${FEATURE_SEARCH ? wcSearchInput("wc-search-mobile") : ""}
-        <a class="mlink ${is("discover")}" href="/discover" onclick="closeMenu()">Discover</a>
-        <a class="mlink ${is("guide")}" href="/guide" onclick="closeMenu()">Guide</a>
+        <a class="mlink ${is("home")}" href="/" onclick="closeMenu()">Quick Guide</a>
         <a class="mlink ${is("cocktails")}" href="/cocktails" onclick="closeMenu()">Cocktails</a>
-        <a class="mlink ${is("regions")}" href="/regions" onclick="closeMenu()">Regions</a>
+        <a class="mlink ${is("discover")}" href="/discover" onclick="closeMenu()">Discovery Hub</a>
         <a class="mlink ${is("mybar")}" href="/mybar" onclick="closeMenu()">My Bar</a>
         <div class="mauth">${mobileAuth}</div>
       </nav>
